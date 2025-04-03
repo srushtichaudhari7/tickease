@@ -12,7 +12,7 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:4000/signup", { name, email, password, role });
+      await axios.post("http://localhost:4000/api/auth/signup", { name, email, password, role });
       alert("Signup successful! Please log in.");
       navigate("/login");
     } catch (error) {

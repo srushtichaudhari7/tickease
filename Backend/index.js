@@ -14,9 +14,11 @@ app.use(cors({
     origin: "*",  // Temporarily allow all origins (you can restrict later)
     methods: "GET,POST,PUT,DELETE",
     allowedHeaders: "Content-Type,Authorization",
-    credentials: true
+    credentials: true 
   }));
 app.use(express.json());
+
+
 app.use("/api/auth", authRoutes); // Make sure auth routes are used
 
 
