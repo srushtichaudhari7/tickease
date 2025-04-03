@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const EmployeeDashboard = () => {
+import axios from "axios";
+import { FaTasks, FaCog, FaUsers, FaFolderOpen, FaHome, FaHeadset } from "react-icons/fa";
+
+const Home = () => {
     const [tasks, setTasks] = useState([]);
     const [projects, setProjects] = useState([]);
     const [members, setMembers] = useState([]);
-    const [stats, setStats] = useState({});
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();  // 👈 Use navigate() instead of state switching
+
+    const [newTask, setNewTask] = useState({
+        title: "",
+        description: "",
+        dueDate: "",
+        projectId: "",
+    });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -18,124 +28,143 @@ const EmployeeDashboard = () => {
                 setTasks(response.data.tasks);
                 setProjects(response.data.projects);
                 setMembers(response.data.members);
-                setStats(response.data.stats);
             } catch (error) {
                 console.error("Error fetching dashboard data:", error);
             }
         };
-
         fetchData();
-
-        // Check localStorage for dark mode state
-        const savedMode = localStorage.getItem("darkMode");
-        if (savedMode === "enabled") {
-            document.documentElement.classList.add("dark");
-            setIsDarkMode(true);
-        } else {
-            document.documentElement.classList.remove("dark");
-            setIsDarkMode(false);
-        }
     }, []);
 
-    const toggleDarkMode = () => {
-        if (isDarkMode) {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("darkMode", "disabled");
-            setIsDarkMode(false);
-        } else {
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("darkMode", "enabled");
-            setIsDarkMode(true);
+    const handleTaskSubmit = async () => {
+        if (!newTask.title || !newTask.projectId) {
+            alert("Task Title and Project are required!");
+            return;
+        }
+
+        try {
+            const response = await axios.post("http://localhost:4000/api/tasks", newTask, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            });
+
+            setTasks([...tasks, response.data]);
+            setIsModalOpen(false);
+            setNewTask({ title: "", description: "", dueDate: "", projectId: "" });
+        } catch (error) {
+            console.error("Error adding task:", error);
         }
     };
 
     return (
-        <div className={`flex ${isDarkMode ? "dark" : ""}`}>
+        <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
             {/* Sidebar */}
-            <div className="w-1/4 bg-gray-100 p-4 h-screen dark:bg-gray-900 dark:text-white">
-                <h2 className="text-2xl font-bold mb-6 text-center">📊 Dashboard</h2>
-                <ul className="menu p-2 rounded-box space-y-2">
-                    <li className="hover:bg-primary hover:text-white rounded p-2">
-                        <span>🏠 Home</span>
-                    </li>
-                    <li className="hover:bg-primary hover:text-white rounded p-2">
-                        <span>📋 My Tasks</span>
-                    </li>
-                    <li className="hover:bg-primary hover:text-white rounded p-2">
-                        <span>⚙️ Settings</span>
-                    </li>
-                    <li className="hover:bg-primary hover:text-white rounded p-2">
-                        <span>👥 Members</span>
-                    </li>
+            <div className="w-64 bg-white dark:bg-gray-800 shadow-lg p-5 flex flex-col justify-between">
+                <div>
+                    {/* Logo */}
+                    <h2 className="text-xl font-bold text-gray-700 dark:text-white mb-6">Jira Clone</h2>
 
-                    {/* Support Section */}
-                    <li className="hover:bg-primary hover:text-white rounded p-2">
-                        <span>🛠️ Support</span>
-                    </li>
+                    {/* Sidebar Links */}
+                    <nav className="space-y-4">
+                        <SidebarItem icon={<FaHome />} text="Home" onClick={() => navigate("/")} />
+                        <SidebarItem icon={<FaTasks />} text="My Tasks" onClick={() => navigate("/employee-dashboard/my-tasks")} />
+                        <SidebarItem icon={<FaUsers />} text="Members" onClick={() => navigate("/employee-dashboard/members")} />
+                        <SidebarItem icon={<FaFolderOpen />} text="Projects" onClick={() => navigate("/employee-dashboard/projects")} />
+                        <SidebarItem icon={<FaCog />} text="Settings" onClick={() => navigate("/employee-dashboard/settings")} />
+                        <SidebarItem icon={<FaHeadset />} text="Support" onClick={() => navigate("/employee-dashboard/support")} />
+                    </nav>
 
-                    {/* Dotted Line Separator */}
-                    <li className="border-t-2 border-dashed border-gray-500 dark:border-gray-300 my-2"></li>
-
-                    {/* Projects Section */}
-                    <li className="hover:bg-primary hover:text-white rounded p-2">
-                        <span>📂 Projects</span>
-                    </li>
-                </ul>
-
-                {/* Dark Mode Toggle */}
-                <button
-                    className="btn btn-primary mt-6"
-                    onClick={toggleDarkMode}
-                >
-                    {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-                </button>
-            </div>
-
-            {/* Main Dashboard */}
-            <div className="w-3/4 p-6 bg-white dark:bg-gray-800 dark:text-white">
-                <h1 className="text-2xl font-bold">Employee Dashboard</h1>
-
-                {/* Stats Section */}
-                <div className="grid grid-cols-5 gap-4 mt-4">
-                    <div className="p-4 bg-green-100 dark:bg-green-900 rounded shadow">Total Tasks: {stats.totalTasks}</div>
-                    <div className="p-4 bg-blue-100 dark:bg-blue-900 rounded shadow">Assigned Tasks: {stats.assignedTasks}</div>
-                    <div className="p-4 bg-yellow-100 dark:bg-yellow-900 rounded shadow">Completed Tasks: {stats.completedTasks}</div>
-                    <div className="p-4 bg-red-100 dark:bg-red-900 rounded shadow">Incomplete Tasks: {stats.incompleteTasks}</div>
-                    <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded shadow">Overdue Tasks: {stats.overdueTasks}</div>
                 </div>
 
-                {/* Tasks Section */}
-                <h2 className="text-xl font-bold mt-6">📌 Tasks</h2>
-                <ul className="mt-2">
-                    {tasks.map(task => (
-                        <li key={task._id} className="p-2 border-b dark:border-gray-700">
-                            📝 {task.title} - <span className="text-gray-500 dark:text-gray-300">{task.status}</span>
-                        </li>
-                    ))}
-                </ul>
+                {/* User Info */}
+                <div className="p-3 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center">
+                    <div className="w-10 h-10 bg-blue-500 text-white flex items-center justify-center rounded-full">
+                        S
+                    </div>
+                    <div className="ml-3">
+                        <p className="text-sm font-bold text-gray-700 dark:text-white">Srushti Chaudhari</p>
+                        <p className="text-xs text-gray-500">srushtichaudhari36@gmail.com</p>
+                    </div>
+                </div>
+            </div>
 
-                {/* Projects Section */}
-                <h2 className="text-xl font-bold mt-6">📁 Projects</h2>
-                <ul className="mt-2">
-                    {projects.map(project => (
-                        <li key={project._id} className="p-2 border-b dark:border-gray-700">
-                            📁 {project.name}
-                        </li>
-                    ))}
-                </ul>
+            {/* Main Content */}
+            <div className="flex-1 p-6 overflow-y-auto">
+                
+                    <>
+                        <h1 className="text-2xl font-bold">Home</h1>
+                        <p className="text-gray-500 text-sm">Monitor all your projects and tasks here</p>
 
-                {/* Members Section */}
-                <h2 className="text-xl font-bold mt-6">👥 Team Members</h2>
-                <ul className="mt-2">
-                    {members.map(member => (
-                        <li key={member._id} className="p-2 border-b dark:border-gray-700">
-                            👤 {member.name} ({member.email})
-                        </li>
-                    ))}
-                </ul>
+                        {/* Dashboard Metrics */}
+                        <div className="grid grid-cols-5 gap-4 mt-4">
+                            <MetricBox title="Total Tasks" value={tasks.length} />
+                            <MetricBox title="Assigned Tasks" value={tasks.length} />
+                            <MetricBox title="Completed Tasks" value={tasks.filter(task => task.status === "Completed").length} />
+                            <MetricBox title="Incomplete Tasks" value={tasks.filter(task => task.status !== "Completed").length} />
+                            <MetricBox title="Overdue Tasks" value={tasks.filter(task => new Date(task.dueDate) < new Date()).length} />
+                        </div>
+
+                        {/* Tasks Section */}
+                        <Section title="📌 Tasks" count={tasks.length} onAdd={() =>     (true)}>
+                            {tasks.map(task => (
+                                <li key={task._id} className="p-2 border-b dark:border-gray-700">
+                                    📝 {task.title} - <span className="text-gray-500 dark:text-gray-300">{task.status}</span>
+                                </li>
+                            ))}
+                        </Section>
+
+                        {/* Members Section */}
+                        <Section title="👥 Members" count={members.length}>
+                            {members.map(member => (
+                                <li key={member._id} className="p-2 border-b dark:border-gray-700">
+                                    {member.name} - <span className="text-gray-500">{member.email}</span>
+                                </li>
+                            ))}
+                        </Section>
+
+                        {/* Projects Section */}
+                        <Section title="📂 Projects" count={projects.length}>
+                            {projects.map(project => (
+                                <li key={project._id} className="p-2 border-b dark:border-gray-700">
+                                    📌 {project.name}
+                                </li>
+                            ))}
+                        </Section>
+                    </>
+                
             </div>
         </div>
     );
 };
 
-export default EmployeeDashboard;
+// Sidebar Item Component
+const SidebarItem = ({ icon, text, onClick }) => (
+    <div
+        className="flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer transition text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+        onClick={onClick}
+    >
+        {icon}
+        <span>{text}</span>
+    </div>
+);
+
+// Reusable Metric Box
+const MetricBox = ({ title, value }) => (
+    <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+        <h3 className="text-lg font-bold">{title}</h3>
+        <p className="text-2xl">{value}</p>
+    </div>
+);
+
+// Reusable Section Component
+const Section = ({ title, count, onAdd, children }) => (
+    <div className="mt-6 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow relative">
+        <h2 className="text-xl font-bold">{title} ({count})</h2>
+        {onAdd && (
+            <button className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onClick={onAdd}>
+                ➕
+            </button>
+        )}
+        <ul className="mt-2">{children}</ul>
+    </div>
+);
+
+export default Home;
