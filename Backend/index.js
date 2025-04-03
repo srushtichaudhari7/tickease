@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
-
+import router from "./routes/taskRoutes.js";
 
 dotenv.config(); // Load environment variables
 
@@ -19,7 +19,6 @@ app.use(cors({
 app.use(express.json());
 
 
-app.use("/api/auth", authRoutes); // Make sure auth routes are used
 
 
 
@@ -32,6 +31,8 @@ mongoose.connect(process.env.MONGO_URI, {
 .catch((err) => console.log("DB Connection Error:", err));
 
 // Sample Route
+app.use("/api/auth", authRoutes); // Make sure auth routes are used
+app.use("/api/tasks", router);
 app.get("/", (req, res) => {
   res.send("Tickease Backend Running!");
 });
