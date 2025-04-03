@@ -67,6 +67,19 @@ const EmployeeDashboard = () => {
                     <li className="hover:bg-primary hover:text-white rounded p-2">
                         <span>👥 Members</span>
                     </li>
+
+                    {/* Support Section */}
+                    <li className="hover:bg-primary hover:text-white rounded p-2">
+                        <span>🛠️ Support</span>
+                    </li>
+
+                    {/* Dotted Line Separator */}
+                    <li className="border-t-2 border-dashed border-gray-500 dark:border-gray-300 my-2"></li>
+
+                    {/* Projects Section */}
+                    <li className="hover:bg-primary hover:text-white rounded p-2">
+                        <span>📂 Projects</span>
+                    </li>
                 </ul>
 
                 {/* Dark Mode Toggle */}
