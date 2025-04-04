@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
 
 const taskSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    projectId: { type: mongoose.Schema.Types.ObjectId, ref: "Project", required: true },
-    assigneeId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    dueDate: { type: Date, required: true },
-    status: { type: String, enum: ["backlog", "in progress", "in review", "todo", "done"], default: "todo" },
+    title: String,
+    description: String,
+    status: String,
+    projectId: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
+    assigneeId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
 });
 
-export default model("Task", taskSchema);
+const Task = mongoose.model("Task", taskSchema);
+
+export default Task; // Make sure this line is present

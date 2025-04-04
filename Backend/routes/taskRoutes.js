@@ -1,5 +1,5 @@
 import express from "express"
-import Task from "../models/Task";
+import Task from "../models/Task.js";
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ message: error.message });
-    }
+    } 
 });
 
 // 📌 Create a new task
