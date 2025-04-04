@@ -1,10 +1,4 @@
-import { useState } from "react";
-
-const TaskTable = () => {
-    const [tasks, setTasks] = useState([
-        { id: 1, name: "Create Meet", project: "First", assignee: "Srushti Chaudhari", dueDate: "2025-04-18", status: "Done" },
-    ]);
-
+const TaskTable = ({ tasks }) => {
     return (
         <div className="bg-grey-50 p-6 mt-4 shadow-lg rounded-lg">
             {/* Filters */}
@@ -26,12 +20,12 @@ const TaskTable = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {tasks.map(task => (
-                        <tr key={task.id} className="text-center">
-                            <td className="p-2 border">{task.name}</td>
-                            <td className="p-2 border">{task.project}</td>
-                            <td className="p-2 border">{task.assignee}</td>
-                            <td className="p-2 border">{task.dueDate}</td>
+                    {tasks.map((task, index) => (
+                        <tr key={task._id || index} className="text-center">
+                            <td className="p-2 border">{task.title}</td>
+                            <td className="p-2 border">{task.project?.name || "N/A"}</td>
+                            <td className="p-2 border">{task.assignee?.name || "N/A"}</td>
+                            <td className="p-2 border">{task.dueDate?.split("T")[0]}</td>
                             <td className="p-2 border bg-green-200">{task.status}</td>
                         </tr>
                     ))}

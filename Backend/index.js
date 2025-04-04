@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
 import router from "./routes/taskRoutes.js";
 import projectroute from "./routes/projectRoutes.js";
+import memberRoute from "./routes/memberRoutes.js";
+
 
 dotenv.config(); // Load environment variables
 
@@ -36,6 +38,7 @@ app.get("/", (req, res) => {
   res.send("Tickease Backend Running!");
 });
 app.use("/api/projects", projectroute); // Add project routes
+app.use("/api/members", memberRoute);
 
 
 // Import Routes

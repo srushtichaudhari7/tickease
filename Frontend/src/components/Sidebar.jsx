@@ -24,7 +24,7 @@ const Sidebar = () => {
             {/* User Info */}
             <div className="p-3 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center">
                 <div className="w-10 h-10 bg-blue-500 text-white flex items-center justify-center rounded-full">
-                    S
+                    
                 </div>
                 <div className="ml-3">
                     <p className="text-sm font-bold text-gray-700 dark:text-white">Srushti Chaudhari</p>

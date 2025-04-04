@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../components/axiosInstance";
 import Sidebar from "../components/Sidebar";
 
 const Projects = () => {
@@ -13,9 +13,8 @@ const Projects = () => {
     useEffect(() => {
         const fetchProjects = async () => {
             try {
-                const response = await axios.get("http://localhost:4000/api/projects", {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-                });
+                const response = await axiosInstance.get("/projects");
+
                 setProjects(response.data);
             } catch (error) {
                 console.error("Error fetching projects:", error);
@@ -32,9 +31,8 @@ const Projects = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:4000/api/projects", newProject, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-            });
+            const response = await axiosInstance.post("/projects", newProject);
+
 
             setProjects([...projects, response.data]);
             setIsModalOpen(false);
@@ -80,8 +78,8 @@ const Projects = () => {
 
                 {/* Add Project Modal */}
                 {isModalOpen && (
-                    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                    <div className="fixed inset-0 bg-grey bg-opacity-900 bg-opacity-50 flex justify-center items-center">
+                        <div className="bg-grey p-6 rounded-lg shadow-lg w-96">
                             <h2 className="text-xl font-bold mb-4">New Project</h2>
                             <input
                                 type="text"

@@ -9,6 +9,7 @@ import React from "react";
 import TaskKanban from "./components/TaskKanban";
 import TaskCalendar from "./components/TaskCalendar";
 import Projects from "./pages/Projects";
+import Members from "./pages/Members";
 
 function App() {
   return (
@@ -49,6 +50,14 @@ function App() {
           element={
             <ProtectedRoute role="Employee">
               <TaskCalendar />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee-dashboard/members"
+          element={
+            <ProtectedRoute role="Employee">
+              <Members />
             </ProtectedRoute>
           }
         />

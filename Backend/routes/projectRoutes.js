@@ -2,7 +2,7 @@ import express from "express";
 import Project from "../models/ProjectModel.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
-const projectroute = express.projectroute();
+const projectroute = express.Router();
 
 // 🟢 Get all projects
 projectroute.get("/", authMiddleware, async (req, res) => {
@@ -15,7 +15,7 @@ projectroute.get("/", authMiddleware, async (req, res) => {
 });
 
 // 🟢 Get a single project by ID
-projectroute.get("/:id", authmiddleware, async (req, res) => {
+projectroute.get("/:id", authMiddleware, async (req, res) => {
     try {
         const project = await Project.findById(req.params.id);
         if (!project) {
@@ -28,7 +28,7 @@ projectroute.get("/:id", authmiddleware, async (req, res) => {
 });
 
 // 🔵 Create a new project
-projectroute.post("/", authmiddleware, async (req, res) => {
+projectroute.post("/", authMiddleware, async (req, res) => {
     const { name, description } = req.body;
 
     if (!name) {
@@ -50,7 +50,7 @@ projectroute.post("/", authmiddleware, async (req, res) => {
 });
 
 // 🟡 Update a project
-projectroute.put("/:id", authmiddleware, async (req, res) => {
+projectroute.put("/:id", authMiddleware, async (req, res) => {
     const { name, description } = req.body;
 
     try {
@@ -71,7 +71,7 @@ projectroute.put("/:id", authmiddleware, async (req, res) => {
 });
 
 // 🔴 Delete a project
-projectroute.delete("/:id", authmiddleware, async (req, res) => {
+projectroute.delete("/:id", authMiddleware, async (req, res) => {
     try {
         const project = await Project.findById(req.params.id);
 

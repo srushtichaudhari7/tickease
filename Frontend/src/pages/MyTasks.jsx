@@ -1,16 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TaskTable from "../components/TaskTable";
 import TaskKanban from "../components/TaskKanban";
 import TaskCalendar from "../components/TaskCalendar";
 import { useNavigate } from "react-router-dom";
 import TaskModal from "../components/TaskModal";
 import Sidebar from "../components/Sidebar";
+import axiosInstance from "../components/axiosInstance"; // ✅ Import your custom axiosInstance
 
 const MyTasks = () => {
     const [view, setView] = useState("table");
     const navigate = useNavigate(); 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [tasks, setTasks] = useState([]);
+
+    // ✅ Fetch existing tasks on component mount
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                const response = await axiosInstance.get("/api/tasks", {
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                });
+                setTasks(response.data);
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
+            }
+        };
+
+        fetchTasks();
+    }, []);
 
     return ( 
         <div className="flex h-screen">
@@ -42,11 +59,11 @@ const MyTasks = () => {
                 <TaskModal 
                     isOpen={isModalOpen} 
                     onClose={() => setIsModalOpen(false)} 
-                    onTaskAdded={(newTask) => setTasks([...tasks, newTask])} 
+                    onTaskAdded={(newTask) => setTasks(prev => [...prev, newTask])}
                 />
 
                 {/* Render View */}
-                {view === "table" && <TaskTable />}
+                {view === "table" && <TaskTable tasks={tasks} />}
                 {view === "kanban" && <TaskKanban />}
                 {view === "calendar" && <TaskCalendar />}
             </div>
