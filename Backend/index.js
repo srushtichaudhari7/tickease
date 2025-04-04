@@ -18,14 +18,15 @@ app.use(cors({
   }));
 app.use(express.json());
 
-
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
+let Mongo = process.env.MONGO_URI;
+console.log("Mongo URI:", Mongo); // Debugging log
+mongoose.connect(Mongo, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
 .then(() => console.log("MongoDB Connected"))
-.catch((err) => [console.log(process.env.MONGO_URI) , console.log("DB Connection Error:", err)]);
+.catch((err) => [Mongo , console.log("DB Connection Error:", err)]);
     
 // Sample Route
 app.use("/api/auth", authRoutes); // Make sure auth routes are used
