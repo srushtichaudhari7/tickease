@@ -8,6 +8,7 @@ import ProtectedRoute from "./Components/ProtectedRoute";
 import React from "react";
 import TaskKanban from "./components/TaskKanban";
 import TaskCalendar from "./components/TaskCalendar";
+import Projects from "./pages/Projects";
 
 function App() {
   return (
@@ -59,10 +60,16 @@ function App() {
             <ProtectedRoute role="Customer">
               <CustomerDashboard />
             </ProtectedRoute>
-          }
-          
-          
+          } 
         />
+        {/* Protected Routes for Employees */}
+        <Route
+          path="/employee-dashboard/projects/"
+          element={
+            <ProtectedRoute role="Employee">
+              <Projects />
+            </ProtectedRoute>
+          } />
       </Routes>
     </Router>
   );

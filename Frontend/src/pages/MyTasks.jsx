@@ -4,44 +4,52 @@ import TaskKanban from "../components/TaskKanban";
 import TaskCalendar from "../components/TaskCalendar";
 import { useNavigate } from "react-router-dom";
 import TaskModal from "../components/TaskModal";
+import Sidebar from "../components/Sidebar";
 
 const MyTasks = () => {
     const [view, setView] = useState("table");
     const navigate = useNavigate(); 
     const [isModalOpen, setIsModalOpen] = useState(false);
-const [tasks, setTasks] = useState([]);
-    return (
-        <div className="w-full p-6">
-            <h1 className="text-2xl font-bold">My Tasks</h1>
-            <p className="text-gray-500">View all your tasks here</p>
+    const [tasks, setTasks] = useState([]);
 
-            {/* View Switcher */}
-            <div className="flex space-x-4 mt-4">
-                <button className={`px-4 py-2 ${view === "table" ? "bg-gray-300" : "bg-gray-100"}`} onClick={() => setView("table")}>Table</button>
-                <button className={`px-4 py-2 ${view === "kanban" ? "bg-gray-300" : "bg-gray-100"}`} onClick={() => navigate("/employee-dashboard/my-tasks/kanban")}>Kanban</button>
-                <button className={`px-4 py-2 ${view === "calendar" ? "bg-gray-300" : "bg-gray-100"}`} onClick={() => navigate("/employee-dashboard/my-tasks/calendar")}>Calendar</button>
+    return ( 
+        <div className="flex h-screen">
+            {/* Sidebar on the left */}
+            <div className="w-64">
+                <Sidebar />
             </div>
-            <button 
-    className="px-4 py-2 bg-blue-500 text-white rounded mb-4"
-    onClick={() => setIsModalOpen(true)}
->
-    ➕ New Task
-</button>
-            <button 
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+
+            {/* Main content on the right */}
+            <div className="flex-1 p-6 overflow-y-auto">
+                <h1 className="text-2xl font-bold">My Tasks</h1>
+                <p className="text-gray-500">View all your tasks here</p>
+
+                {/* View Switcher */}
+                <div className="flex space-x-4 mt-4">
+                    <button className={`px-4 py-2 ${view === "table" ? "bg-gray-300" : "bg-gray-100"}`} onClick={() => setView("table")}>Table</button>
+                    <button className={`px-4 py-2 ${view === "kanban" ? "bg-gray-300" : "bg-gray-100"}`} onClick={() => navigate("/employee-dashboard/my-tasks/kanban")}>Kanban</button>
+                    <button className={`px-4 py-2 ${view === "calendar" ? "bg-gray-300" : "bg-gray-100"}`} onClick={() => navigate("/employee-dashboard/my-tasks/calendar")}>Calendar</button>
+                </div>
+
+                {/* New Task Button */}
+                <button 
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg my-4"
                     onClick={() => setIsModalOpen(true)}>
                     ➕ New Task
                 </button>
-               {/* Task Modal */}
-            <TaskModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
-                onTaskAdded={(newTask) => setTasks([...tasks, newTask])} 
-            />
-            {/* Render View */}
-            {view === "table" && <TaskTable />}
-            {view === "kanban" && <TaskKanban />}
-            {view === "calendar" && <TaskCalendar />}
+
+                {/* Task Modal */}
+                <TaskModal 
+                    isOpen={isModalOpen} 
+                    onClose={() => setIsModalOpen(false)} 
+                    onTaskAdded={(newTask) => setTasks([...tasks, newTask])} 
+                />
+
+                {/* Render View */}
+                {view === "table" && <TaskTable />}
+                {view === "kanban" && <TaskKanban />}
+                {view === "calendar" && <TaskCalendar />}
+            </div>
         </div>
     );
 };

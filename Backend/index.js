@@ -4,6 +4,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
 import router from "./routes/taskRoutes.js";
+import projectroute from "./routes/projectRoutes.js";
 
 dotenv.config(); // Load environment variables
 
@@ -34,6 +35,8 @@ app.use("/api/tasks", router);
 app.get("/", (req, res) => {
   res.send("Tickease Backend Running!");
 });
+app.use("/api/projects", projectroute); // Add project routes
+
 
 // Import Routes
 
