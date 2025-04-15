@@ -5,12 +5,14 @@ import authMiddleware from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // 📌 Fetch all tasks
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware ,async (req, res) => {
     try {
-        const tasks = await Task.find({ userId: req.user.id }).populate("projectId assigneeId");
+        const tasks = await Task.find({ userId: req.user.id }).populate("projectId", "name").populate("assigneeId");
         res.json(tasks);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+
+        let hehe = "Error fetching tasks";
+        res.status(500).json ({ hehe });
     } 
 });
 // Create Task (for logged-in user)

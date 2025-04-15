@@ -5,7 +5,7 @@ import TaskCalendar from "../components/TaskCalendar";
 import { useNavigate } from "react-router-dom";
 import TaskModal from "../components/TaskModal";
 import Sidebar from "../components/Sidebar";
-import axiosInstance from "../components/axiosInstance"; // ✅ Import your custom axiosInstance
+import axiosInstance from "../components/axiosInstance"; 
 
 const MyTasks = () => {
     const [view, setView] = useState("table");
@@ -17,7 +17,7 @@ const MyTasks = () => {
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                const response = await axiosInstance.get("/api/tasks", {
+                const response = await axiosInstance.get("/tasks", {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
                 });
                 setTasks(response.data);

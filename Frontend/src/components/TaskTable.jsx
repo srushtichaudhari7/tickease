@@ -23,7 +23,7 @@ const TaskTable = ({ tasks }) => {
                     {tasks.map((task, index) => (
                         <tr key={task._id || index} className="text-center">
                             <td className="p-2 border">{task.title}</td>
-                            <td className="p-2 border">{task.project?.name || "N/A"}</td>
+                            <td className="p-2 border">{task.projectId?.name || "N/A"}</td>
                             <td className="p-2 border">{task.assignee?.name || "N/A"}</td>
                             <td className="p-2 border">{task.dueDate?.split("T")[0]}</td>
                             <td className="p-2 border bg-green-200">{task.status}</td>
