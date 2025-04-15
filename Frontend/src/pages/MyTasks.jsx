@@ -21,11 +21,11 @@ const MyTasks = () => {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
                 });
                 setTasks(response.data);
+                console.log("Fetched Tasks:", response.data); // for debugging
             } catch (error) {
                 console.error("Error fetching tasks:", error);
             }
         };
-
         fetchTasks();
     }, []);
 

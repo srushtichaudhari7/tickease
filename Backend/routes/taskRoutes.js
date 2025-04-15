@@ -7,23 +7,24 @@ const router = express.Router();
 // 📌 Fetch all tasks
 router.get("/", authMiddleware ,async (req, res) => {
     try {
-        const tasks = await Task.find({ userId: req.user.id }).populate("projectId", "name").populate("assigneeId");
+        const tasks = await Task.find({ userId: req.user.id })
         res.json(tasks);
     } catch (error) {
-
         let hehe = "Error fetching tasks";
-        res.status(500).json ({ hehe });
+        res.status(500).json ({ error });
     } 
 });
 // Create Task (for logged-in user)
 router.post("/", authMiddleware, async (req, res) => {
     try {
-        const { title, projectId, assigneeId, dueDate, status } = req.body;
+        const { title, projectname ,  projectId, assigneename , assigneeId, dueDate, status } = req.body;
 
         const newTask = new Task({
             userId: req.user.id, // Store the logged-in user's ID
             title,
+            projectname,
             projectId,
+            assigneename,
             assigneeId,
             dueDate,
             status

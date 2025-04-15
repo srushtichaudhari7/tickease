@@ -3,7 +3,9 @@ import axiosInstance from "./axiosInstance";
 const TaskModal = ({ isOpen, onClose, onTaskAdded }) => {
     const [taskData, setTaskData] = useState({
         title: "",
+        projectname : "",
         projectId: "",
+        assigneename : "",
         assigneeId: "",
         dueDate: "",
         status: "Backlog",

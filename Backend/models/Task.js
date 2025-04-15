@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 const taskSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // User reference
     title: { type: String, required: true },
+    projectname : { type: String, required: true },
     projectId: { type: mongoose.Schema.Types.ObjectId, ref: "Project", required: true },
+    assigneename : { type: String, required: true },
     assigneeId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     dueDate: { type: Date, required: true },
     status: { 
