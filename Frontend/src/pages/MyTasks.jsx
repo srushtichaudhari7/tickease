@@ -37,12 +37,12 @@ const MyTasks = () => {
       {/* Main content on the right */}
       <div className="flex-1 p-6 overflow-y-auto">
         <h1 className="text-2xl font-bold">My Tasks</h1>
-        <p className="text-gray-500">View all your tasks here</p>
+        {/* <p className="text-white">View all your tasks here</p> */}
 
         {/* View Switcher */}
         <div className="flex space-x-4 mt-4">
           <button
-            className={`px-4 py-2 ${
+            className={`px-4 py-2 text-black bg-white rounded-md ${
               view === "table" ? "bg-gray-600" : "bg-gray-100"
             }`}
             onClick={() => setView("table")}
@@ -50,7 +50,7 @@ const MyTasks = () => {
             Table
           </button>
           <button
-            className={`px-4 py-2 ${
+            className={`px-4 py-2 text-black bg-white rounded-md ${
               view === "kanban" ? "bg-gray-600" : "bg-gray-600"
             }`}
             onClick={() => navigate("/employee-dashboard/my-tasks/kanban")}
@@ -58,7 +58,7 @@ const MyTasks = () => {
             Scrum 
           </button>
           <button
-            className={`px-4 py-2 ${
+            className={`px-4 py-2 text-black bg-white rounded-md ${
               view === "calendar" ? "bg-gray-600" : "bg-gray-600"
             }`}
             onClick={() => navigate("/employee-dashboard/my-tasks/calendar")}

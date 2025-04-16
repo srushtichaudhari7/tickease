@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axiosInstance from './axiosInstance';
-import StatusType from '../constants/status.type';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axiosInstance from "./axiosInstance";
+import StatusType from "../constants/status.type";
 
 const TaskDetails = () => {
   const { taskId } = useParams();
@@ -11,6 +11,27 @@ const TaskDetails = () => {
   const [editedTask, setEditedTask] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false); //
+
+  const handleDelete = () => {
+    setShowDeleteModal(true); // Show the modal
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await axiosInstance.delete(`/tasks/${taskId}`);
+      navigate("/tasks");
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      setError("Failed to delete task. Please try again.");
+    } finally {
+      setShowDeleteModal(false); // Close modal either way
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+  };
 
   useEffect(() => {
     const fetchTaskDetails = async () => {
@@ -26,9 +47,9 @@ const TaskDetails = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditedTask(prev => ({
+    setEditedTask((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -39,10 +60,11 @@ const TaskDetails = () => {
       setTask(response.data);
       setIsEditing(false);
     } catch (error) {
-      console.error('Error updating task:', error);
-      setError('Failed to update task. Please try again.');
+      console.error("Error updating task:", error);
+      setError("Failed to update task. Please try again.");
     }
   };
+
 
   if (isLoading) {
     return (
@@ -53,9 +75,7 @@ const TaskDetails = () => {
   }
 
   if (error) {
-    return (
-      <div className="p-4 bg-red-100 text-red-700 rounded">{error}</div>
-    );
+    return <div className="p-4 bg-red-100 text-red-700 rounded">{error}</div>;
   }
 
   if (!task) {
@@ -85,7 +105,14 @@ const TaskDetails = () => {
                 onClick={() => setIsEditing(!isEditing)}
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
               >
-                {isEditing ? 'Cancel' : 'Edit Task'}
+                {isEditing ? "Cancel" : "Edit Task"}
+              </button>
+
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Delete Task
               </button>
             </div>
           </div>
@@ -104,7 +131,7 @@ const TaskDetails = () => {
                   className="w-full px-3 py-2 border rounded-md"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Description
@@ -158,7 +185,7 @@ const TaskDetails = () => {
                   <input
                     type="date"
                     name="dueDate"
-                    value={editedTask.dueDate?.split('T')[0]}
+                    value={editedTask.dueDate?.split("T")[0]}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border rounded-md"
                   />
@@ -187,7 +214,9 @@ const TaskDetails = () => {
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   {task.title}
                 </h2>
-                <p className="text-gray-600 dark:text-gray-300">{task.description}</p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {task.description}
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -195,13 +224,15 @@ const TaskDetails = () => {
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
                     Status
                   </h3>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${
-                    task.status === StatusType.COMPLETED
-                      ? 'bg-green-100 text-green-800'
-                      : task.status === StatusType.IN_PROGRESS
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${
+                      task.status === StatusType.COMPLETED
+                        ? "bg-green-100 text-green-800"
+                        : task.status === StatusType.IN_PROGRESS
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
                     {task.status}
                   </span>
                 </div>
@@ -210,13 +241,15 @@ const TaskDetails = () => {
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
                     Priority
                   </h3>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${
-                    task.priority === 'High'
-                      ? 'bg-red-100 text-red-800'
-                      : task.priority === 'Medium'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-green-100 text-green-800'
-                  }`}>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${
+                      task.priority === "High"
+                        ? "bg-red-100 text-red-800"
+                        : task.priority === "Medium"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-green-100 text-green-800"
+                    }`}
+                  >
                     {task.priority}
                   </span>
                 </div>
@@ -241,7 +274,7 @@ const TaskDetails = () => {
                       Project
                     </h4>
                     <p className="text-gray-900 dark:text-gray-100">
-                      {task.project?.name || 'Not assigned to a project'}
+                      {task.project?.name || "Not assigned to a project"}
                     </p>
                   </div>
                   <div>
@@ -249,9 +282,38 @@ const TaskDetails = () => {
                       Assignee
                     </h4>
                     <p className="text-gray-900 dark:text-gray-100">
-                      {task.assignee?.name || 'Unassigned'}
+                      {task.assignee?.name || "Unassigned"}
                     </p>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Delete Confirmation Modal */}
+          {showDeleteModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+              <div className="bg-white dark:bg-gray-700 rounded-md shadow-lg p-6 w-full max-w-md">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+                  Confirm Deletion?
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  Are you sure you want to delete this task? This action cannot
+                  be undone.
+                </p>
+                <div className="flex justify-end space-x-2">
+                  <button
+                    onClick={cancelDelete}
+                    className="px-4 py-2 bg-white border border-gray-400 text-gray-700 hover:bg-gray-300 hover:border-gray-700 rounded-md transition duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  >
+                    Confirm Delete
+                  </button>
                 </div>
               </div>
             </div>

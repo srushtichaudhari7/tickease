@@ -75,6 +75,8 @@ function EmployeeDashboard() {
     }
   };
 
+  
+
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -265,7 +267,7 @@ function EmployeeDashboard() {
               <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 flex justify-center">
                 <button
                   className="text-sm text-blue-500 dark:text-blue-400 hover:underline"
-                  onClick={() => navigate("/tasks")}
+                  onClick={() => navigate("/employee-dashboard/my-tasks")}
                 >
                   View All Tasks
                 </button>
@@ -283,7 +285,7 @@ function EmployeeDashboard() {
               </div>
 
               <div className="px-6 pb-4 space-y-4">
-                {projects.slice(0, 3).map((project) => (
+                {projects.slice(0, 4).map((project) => (
                   <div
                     key={project._id}
                     className="border-b border-gray-200 dark:border-gray-700 last:border-b-0 pb-3 last:pb-0"
@@ -314,7 +316,7 @@ function EmployeeDashboard() {
               </div>
             </div>
 
-            {/* Team Performance */}
+            {/* Team Performance
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
               <div className="p-6">
                 <h2 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
@@ -341,8 +343,8 @@ function EmployeeDashboard() {
                               }}
                             ></div>
                           </div>
-                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                            {member.tasksCompleted}/
+                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-2"> */}
+                            {/* {member.tasksCompleted}/
                             {member.tasksCompleted + member.tasksInProgress}
                           </span>
                         </div>
@@ -356,8 +358,8 @@ function EmployeeDashboard() {
                     </div>
                   )}
                 </div>
-              </div>
-            </div>
+              </div> */}
+            {/* // </div> */}
           </div>
         </div>
       </div>

@@ -70,8 +70,11 @@ const ProjectDetails = () => {
             Error
           </h2>
           <p className="text-gray-700 dark:text-gray-300">{error}</p>
+         
           <button
-            onClick={() => navigate("/projects")}
+          
+          
+            onClick={() => navigate("/employee-dashboard/projects")}
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
           >
             Back to Projects
@@ -87,7 +90,7 @@ const ProjectDetails = () => {
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-bold mb-2 dark:text-white">Project Not Found</h2>
           <button
-            onClick={() => navigate("/projects")}
+            onClick={() => navigate("/employee-dashboard/projects")}
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
           >
             Back to Projects
@@ -106,7 +109,7 @@ const ProjectDetails = () => {
       <div className="flex-1 p-6 overflow-y-auto">
         <div className="mb-6">
           <button
-            onClick={() => navigate("/projects")}
+            onClick={() => navigate("/employee-dashboard/projects")}
             className="text-blue-500 hover:text-blue-700 flex items-center"
           >
             ← Back to Projects
