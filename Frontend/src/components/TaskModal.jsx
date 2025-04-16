@@ -5,18 +5,16 @@ import { useAuth } from "./AuthContext";
 import { jwtDecode } from "jwt-decode";
 
 const TaskModal = ({ isOpen, onClose, onTaskAdded }) => {
-  const { currentUser } = useAuth();
-  const [taskData, setTaskData] = useState({
-    title: "",
-    projectId: "",
-    assigneeId: "",
-    dueDate: "",
-    status: StatusType.TO_DO,
-  });
-  const [projects, setProjects] = useState([]);
-  const [members, setMembers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+    const [taskData, setTaskData] = useState({
+        title: "",
+        projectId: "",
+        assigneeId: "",
+        dueDate: "",
+        status: "Backlog",
+    });
+
+    const [projects, setProjects] = useState([]);
+    const [members, setMembers] = useState([]);
 
   // Fetch projects & members when modal opens
   useEffect(() => {

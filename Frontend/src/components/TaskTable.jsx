@@ -154,202 +154,31 @@ const TaskTable = () => {
         </div>
       </div>
 
-      {/* Task Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-800">
-            <tr>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer"
-                onClick={() => requestSort("title")}
-              >
-                Title
-                {sortConfig.key === "title" && (
-                  <span className="ml-1">
-                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                  </span>
-                )}
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer"
-                onClick={() => requestSort("status")}
-              >
-                Status
-                {sortConfig.key === "status" && (
-                  <span className="ml-1">
-                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                  </span>
-                )}
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer"
-                onClick={() => requestSort("priority")}
-              >
-                Priority
-                {sortConfig.key === "priority" && (
-                  <span className="ml-1">
-                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                  </span>
-                )}
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer"
-                onClick={() => requestSort("dueDate")}
-              >
-                Due Date
-                {sortConfig.key === "dueDate" && (
-                  <span className="ml-1">
-                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                  </span>
-                )}
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-            {currentTasks.map((task) => (
-              <tr
-                key={task._id}
-                className="hover:bg-gray-50 dark:hover:bg-gray-800"
-                onClick={() => navigate(`/employee-dashboard/my-tasks/${task._id}`)}
-              >
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                  {task.title}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(
-                      task.status
-                    )}`}
-                  >
-                    {task.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                  {task.priority}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                  {new Date(task.dueDate).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                  <div className="flex space-x-2">
-                    {/* Status Change Buttons */}
-                    {task.status !== StatusType.TO_DO && (
-                      <button
-                        className="text-indigo-600 hover:text-indigo-900"
-                        onClick={() =>
-                          handleStatusChange(task._id, StatusType.TO_DO)
-                        }
-                      >
-                        To Do
-                      </button>
-                    )}
-                    {task.status !== StatusType.IN_PROGRESS && (
-                      <button
-                        className="text-yellow-600 hover:text-yellow-900"
-                        onClick={() =>
-                          handleStatusChange(task._id, StatusType.IN_PROGRESS)
-                        }
-                      >
-                        Start
-                      </button>
-                    )}
-                    {task.status !== StatusType.COMPLETED && (
-                      <button
-                        className="text-green-600 hover:text-green-900"
-                        onClick={() =>
-                          handleStatusChange(task._id, StatusType.COMPLETED)
-                        }
-                      >
-                        Complete
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-
-            {currentTasks.length === 0 && (
-              <tr>
-                <td
-                  colSpan="5"
-                  className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
-                >
-                  No tasks found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <button
-              onClick={() =>
-                setCurrentPage(Math.min(totalPages, currentPage + 1))
-              }
-              disabled={currentPage === totalPages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                Showing{" "}
-                <span className="font-medium">{indexOfFirstTask + 1}</span> to{" "}
-                <span className="font-medium">
-                  {Math.min(indexOfLastTask, sortedTasks.length)}
-                </span>{" "}
-                of <span className="font-medium">{sortedTasks.length}</span>{" "}
-                results
-              </p>
-            </div>
-            <div>
-              <nav
-                className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                aria-label="Pagination"
-              >
-                {Array.from({ length: totalPages }).map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentPage(index + 1)}
-                    className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                      currentPage === index + 1
-                        ? "z-10 bg-blue-50 dark:bg-blue-900 border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-200"
-                        : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </div>
+            {/* Table */}
+            <table className="w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr >
+                        <th className="p-2 border">Task Name</th>
+                        <th className="p-2 border">Project</th>
+                        <th className="p-2 border">Assignee</th>
+                        <th className="p-2 border">Due Date</th>
+                        <th className="p-2 border">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {tasks.map((task, index) => (
+                        <tr key={task._id || index} className="text-center">
+                            <td className="p-2 border">{task.title}</td>
+                            <td className="p-2 border">{task.projectId?.name || "N/A"}</td>
+                            <td className="p-2 border">{task.assignee?.name || "N/A"}</td>
+                            <td className="p-2 border">{task.dueDate?.split("T")[0]}</td>
+                            <td className="p-2 border bg-green-200">{task.status}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default TaskTable;

@@ -11,80 +11,30 @@ import  StatusType  from "../../Shared/status.type.js";
 
 const router = express.Router();
 
-// Get individual task by ID
-router.get('/:id', authMiddleware, isAnyRole, async (req, res) => {
-  try {
-    const task = await Task.findById(req.params.id)
-      .populate('assignedTo', 'name email')
-      .select('-__v');
+// 📌 Fetch all tasks
+router.get("/", authMiddleware ,async (req, res) => {
+    try {
+        const tasks = await Task.find({ userId: req.user.id }).populate("projectId", "name").populate("assigneeId");
+        res.json(tasks);
+    } catch (error) {
 
-    if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
-    }
-
-    // Role-based access check
-    if (req.user.role === UserType.CUSTOMER && task.userId.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Access denied' });
-    }
-
-    res.json(task);
-  } catch (error) {
-    console.error('Error fetching task:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
+        let hehe = "Error fetching tasks";
+        res.status(500).json ({ hehe });
+    } 
 });
+// Create Task (for logged-in user)
+router.post("/", authMiddleware, async (req, res) => {
+    try {
+        const { title, projectId, assigneeId, dueDate, status } = req.body;
 
-// Get all tasks - different results based on role
-router.get("/", authMiddleware, isAnyRole, async (req, res) => {
-  try {
-    let tasks = [];
-
-    if (req.user.role === UserType.EMPLOYEE) {
-      // Employees can see all tasks
-      tasks = await Task.find()
-        .populate("assignedTo", "name")
-        .select("-__v")
-        .sort({ createdAt: -1 });
-    } else {
-      // Customers see only their own tasks
-      tasks = await Task.find({ userId: req.user.id })
-        .populate("assignedTo", "name")
-        .select("-__v")
-        .sort({ createdAt: -1 });
-    }
-
-    res.json(tasks);
-  } catch (error) {
-    console.error("Error fetching tasks:", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching tasks", error: error.message });
-  }
-});
-
-// Create a new task - only employees can create tasks
-router.post("/", authMiddleware, isEmployee, async (req, res) => {
-  try {
-    // Employee-only functionality to create tasks
-    const { title, description, dueDate, assignedTo, priority, project } =
-      req.body;
-
-    // Validate request
-    if (!title) {
-      return res.status(400).json({ message: "Title is required" });
-    }
-
-    const newTask = new Task({
-      userId: assignedTo, // The user the task is assigned to
-      title,
-      description,
-      assignedTo,
-      dueDate,
-      priority: priority || "Medium",
-      project,
-      status: StatusType.TO_DO,
-      createdBy: req.user.id, // The employee who created the task
-    });
+        const newTask = new Task({
+            userId: req.user.id, // Store the logged-in user's ID
+            title,
+            projectId,
+            assigneeId,
+            dueDate,
+            status
+        });
 
     const savedTask = await newTask.save();
 

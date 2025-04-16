@@ -13,21 +13,21 @@ const MyTasks = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
 
-  // ✅ Fetch existing tasks on component mount
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await axiosInstance.get("/api/tasks", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        setTasks(response.data);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
+    // ✅ Fetch existing tasks on component mount
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                const response = await axiosInstance.get("/tasks", {
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                });
+                setTasks(response.data);
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
+            }
+        };
 
-    fetchTasks();
-  }, []);
+        fetchTasks();
+    }, []);
 
   return (
     <div className="flex h-screen">
