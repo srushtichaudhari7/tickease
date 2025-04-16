@@ -4,7 +4,6 @@ import { isEmployee, isCustomer } from "../middleware/roleMiddleware.js";
 import UserType  from "../../Shared/user.types.js";
 import  StatusType  from "../../Shared/status.type.js";
 import Task from "../models/Task.js";
-import User from "../models/User.js";
 import Project from "../models/ProjectModel.js";
 
 const router = express.Router();

@@ -14,6 +14,10 @@ import Members from "./pages/Members";
 import CreateIssue from "./components/CreateIssue.jsx";
 import UserType from "./constants/user.types";
 import TaskDetails from "./components/TaskDetails";
+import TicketsRaised from "./pages/TicketsRaised";
+import ConvertTicket from "./pages/ConvertTicket";
+
+
 function App() {
   return (
     <Routes>
@@ -97,6 +101,15 @@ function App() {
         }
       />
 
+      <Route
+        path="/employee-dashboard/tickets"
+        element={
+          <ProtectedRoute role={UserType.EMPLOYEE}>
+            <TicketsRaised />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Customer Portal Routes - Grouped for clarity */}
       <Route
         path="/customer-dashboard"
@@ -118,6 +131,7 @@ function App() {
       />
 
       {/* Catch all route - redirect to login */}
+      <Route path="/convert-ticket/:ticketId" element={<ConvertTicket />} />
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );

@@ -4,6 +4,7 @@ import { useAuth } from "../components/AuthContext";
 import Sidebar from "../components/Sidebar";
 import axiosInstance from "../components/axiosInstance";
 import StatusType from "../constants/status.type";
+import { toast } from "react-toastify"; // Import toast for notifications
 
 function CustomerDashboard() {
   const navigate = useNavigate();
@@ -21,36 +22,75 @@ function CustomerDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Function to update ticket status
+  const updateTicketStatus = async (ticketId, newStatus) => {
+    try {
+      setIsLoading(true); // Indicate loading during update
+      await axiosInstance.put(`/tasks/tickets/${ticketId}/status`, { status: newStatus });
+      // Refresh tickets list after update
+      const updatedTickets = tickets.map(ticket =>
+        ticket.id === ticketId ? { ...ticket, status: newStatus } : ticket
+      );
+      setTickets(updatedTickets);
+
+      // Recalculate stats after status change
+      setStats({
+        openIssues: updatedTickets.filter(t => t.status === StatusType.TO_DO).length,
+        inProgressIssues: updatedTickets.filter(t => t.status === StatusType.IN_PROGRESS || t.status === StatusType.CONVERTED_TO_TASK).length,
+        resolvedIssues: updatedTickets.filter(t => t.status === StatusType.COMPLETED || t.status === StatusType.CLOSED).length,
+      });
+      toast.success(`Ticket status updated to ${newStatus}`);
+    } catch (err) {
+      console.error("Error updating ticket status:", err);
+      toast.error("Failed to update ticket status.");
+      setError(err.response?.data?.message || "Error updating ticket status");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCloseTicket = (ticketId) => {
+    updateTicketStatus(ticketId, StatusType.CLOSED);
+  };
+
+  const handleReopenTicket = (ticketId) => {
+    updateTicketStatus(ticketId, StatusType.TO_DO);
+  };
+
   // Fetch dashboard data
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await axiosInstance.get("/tasks");
+        // Fetch customer's own tickets
+        const response = await axiosInstance.get("/tasks/my-tickets");
         console.log(response.data);
 
         // Process and set ticket data
-        const taskData = response.data || [];
+        const ticketData = response.data || [];
         setTickets(
-          taskData.map((task) => ({
-            id: `TK-${task._id}`,
-            title: task.title,
-            status: task.status,
-            priority: task.priority,
-            created: getTimeAgo(task.createdAt),
+          ticketData.map((ticket) => ({
+            id: ticket._id, // Use the actual ticket ID
+            title: ticket.title,
+            status: ticket.status,
+            // Priority is not directly shown here anymore, but status implies it
+            created: getTimeAgo(ticket.createdAt),
           }))
         );
 
-        // Calculate statistics
+        // Calculate statistics based on ticket statuses
         setStats({
-          openIssues: taskData.filter(
-            (task) => task.status === StatusType.TO_DO
+          // Open includes To Do
+          openIssues: ticketData.filter(
+            (ticket) => ticket.status === StatusType.TO_DO
           ).length,
-          inProgressIssues: taskData.filter(
-            (task) => task.status === StatusType.IN_PROGRESS
+          // In Progress includes Converted to Task
+          inProgressIssues: ticketData.filter(
+            (ticket) => ticket.status === StatusType.IN_PROGRESS || ticket.status === StatusType.CONVERTED_TO_TASK
           ).length,
-          resolvedIssues: taskData.filter(
-            (task) => task.status === StatusType.COMPLETED
+          // Resolved includes Completed and Closed
+          resolvedIssues: ticketData.filter(
+            (ticket) => ticket.status === StatusType.COMPLETED || ticket.status === StatusType.CLOSED
           ).length,
         });
 
@@ -220,11 +260,12 @@ function CustomerDashboard() {
                       >
                         Status
                       </th>
+                      {/* Priority column removed */}
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                       >
-                        Priority
+                        Actions
                       </th>
                       <th
                         scope="col"
@@ -249,10 +290,16 @@ function CustomerDashboard() {
                               <span
                                 className={`h-2.5 w-2.5 rounded-full ${
                                   ticket.status === StatusType.TO_DO
-                                    ? "bg-red-400"
+                                    ? "bg-red-400" // To Do
                                     : ticket.status === StatusType.IN_PROGRESS
-                                    ? "bg-orange-400"
-                                    : "bg-green-400"
+                                    ? "bg-orange-400" // In Progress
+                                    : ticket.status === StatusType.CONVERTED_TO_TASK
+                                    ? "bg-blue-400" // Converted to Task
+                                    : ticket.status === StatusType.COMPLETED
+                                    ? "bg-green-400" // Completed
+                                    : ticket.status === StatusType.CLOSED
+                                    ? "bg-gray-400" // Closed
+                                    : "bg-yellow-400" // Default/Other
                                 } mr-2`}
                               ></span>
                               <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -260,8 +307,28 @@ function CustomerDashboard() {
                               </span>
                             </span>
                           </td>
+                          {/* Priority cell removed */}
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {ticket.priority}
+                            {/* Conditional Actions */}
+                            {ticket.status === StatusType.COMPLETED && (
+                              <button
+                                onClick={() => handleCloseTicket(ticket.id)}
+                                className="text-red-600 hover:text-red-800 text-xs font-medium disabled:opacity-50"
+                                disabled={isLoading} // Disable button while loading
+                              >
+                                Close Ticket
+                              </button>
+                            )}
+                            {ticket.status === StatusType.CLOSED && (
+                              <button
+                                onClick={() => handleReopenTicket(ticket.id)}
+                                className="text-green-600 hover:text-green-800 text-xs font-medium disabled:opacity-50"
+                                disabled={isLoading} // Disable button while loading
+                              >
+                                Re-open Ticket
+                              </button>
+                            )}
+                            {/* Add other actions if needed, e.g., View Details */}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             {ticket.created}

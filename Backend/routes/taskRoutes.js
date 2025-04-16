@@ -1,5 +1,6 @@
 import express from "express";
 import Task from "../models/Task.js";
+import Ticket from "../models/Ticket.js"; // Import the new Ticket model
 import authMiddleware from "../middleware/authMiddleware.js";
 import {
   isEmployee,
@@ -10,29 +11,6 @@ import  UserType  from "../../Shared/user.types.js";
 import  StatusType  from "../../Shared/status.type.js";
 
 const router = express.Router();
-
-// Get individual task by ID
-router.get('/:id', authMiddleware, isAnyRole, async (req, res) => {
-  try {
-    const task = await Task.findById(req.params.id)
-      .populate('assignedTo', 'name email')
-      .select('-__v');
-
-    if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
-    }
-
-    // Role-based access check
-    if (req.user.role === UserType.CUSTOMER && task.userId.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Access denied' });
-    }
-
-    res.json(task);
-  } catch (error) {
-    console.error('Error fetching task:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
 
 // Get all tasks - different results based on role
 router.get("/", authMiddleware, isAnyRole, async (req, res) => {
@@ -59,6 +37,137 @@ router.get("/", authMiddleware, isAnyRole, async (req, res) => {
     res
       .status(500)
       .json({ message: "Error fetching tasks", error: error.message });
+  }
+});
+
+// Get tickets created by the logged-in customer
+router.get("/my-tickets", authMiddleware, isCustomer, async (req, res) => {
+  try {
+    const tickets = await Ticket.find({ createdBy: req.user.id })
+      .select("-__v")
+      .sort({ createdAt: -1 });
+
+    res.json(tickets);
+  } catch (error) {
+    console.error("Error fetching customer tickets:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching customer tickets", error: error.message });
+  }
+});
+
+
+// Get customer tickets - only for employees
+router.get("/customer-tickets", authMiddleware, isEmployee, async (req, res) => {
+  try {
+    // Find tickets created by customers
+    const tickets = await Ticket.find()
+      .populate("createdBy", "name email") // Populate the user who created the ticket
+      .select("-__v")
+      .sort({ createdAt: -1 });
+
+    res.json(tickets);
+  } catch (error) {
+    console.error("Error fetching customer tickets:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching customer tickets", error: error.message });
+  }
+});
+
+// Get individual task by ID
+router.get('/:id', authMiddleware, isAnyRole, async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id)
+      .populate('assignedTo', 'name email')
+      .select('-__v');
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    // Role-based access check
+    if (req.user.role === UserType.CUSTOMER && task.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    res.json(task);
+  } catch (error) {
+    console.error('Error fetching task:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Get individual ticket by ID
+router.get('/ticket/:id', authMiddleware, isAnyRole, async (req, res) => {
+  try {
+    const ticket = await Ticket.findById(req.params.id)
+      .populate('createdBy', 'name email')
+      .select('-__v');
+    if (!ticket) {
+      return res.status(404).json({ message: 'Ticket not found' });
+    }
+    // Role-based access check
+    if (req.user.role === UserType.CUSTOMER && ticket.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+    res.json(ticket);
+  } catch (error) {
+    console.error('Error fetching ticket:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Convert customer ticket to task
+router.put("/convert-ticket/:id", authMiddleware, isEmployee, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { assignedTo, priority, project, dueDate } = req.body; // Get necessary details for task creation
+
+    // Find the original ticket
+    const ticket = await Ticket.findById(id);
+
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    if (!assignedTo) {
+        return res.status(400).json({ message: "assignedTo is required to convert a ticket to a task" });
+    }
+
+    // Create a new task based on the ticket information
+    const newTask = new Task({
+      userId: assignedTo, // The user the task is assigned to
+      title: ticket.title,
+      description: ticket.description,
+      assignedTo: assignedTo,
+      dueDate: dueDate, // Optional: pass from request or set default
+      priority: priority || ticket.priority, // Use ticket priority or request priority
+      project: project, // Optional: pass from request
+      status: StatusType.TO_DO, // Default status for new task
+      createdBy: req.user.id, // Employee who converted the ticket
+      // Optional: Link back to the original ticket ID if needed
+      // originalTicketId: ticket._id,
+    });
+
+    const savedTask = await newTask.save();
+
+    // Update the original ticket's status to 'Converted to Task'
+    ticket.status = StatusType.CONVERTED_TO_TASK;
+    await ticket.save();
+
+    // Optional: Delete the original ticket after conversion
+    // await Ticket.findByIdAndDelete(id);
+
+    res.json({
+      message: "Ticket converted to task successfully",
+      task: savedTask,
+    });
+  } catch (error) {
+    console.error("Error converting ticket:", error);
+    res
+      .status(500)
+      .json({ message: "Error converting ticket", error: error.message });
   }
 });
 
@@ -100,39 +209,38 @@ router.post("/", authMiddleware, isEmployee, async (req, res) => {
   }
 });
 
-// New endpoint: Create an issue - customers can use this endpoint
+// New endpoint: Create an issue (Ticket) - customers can use this endpoint
 router.post("/issue", authMiddleware, isCustomer, async (req, res) => {
   try {
-    const { title, description, priority } = req.body;
+    // Priority removed from customer input
+    const { title, description } = req.body;
 
     // Validate request
     if (!title) {
       return res.status(400).json({ message: "Title is required" });
     }
 
-    // Create a new task with the current user as both userId and createdBy
-    const newIssue = new Task({
-      userId: req.user.id,
+    // Create a new Ticket
+    const newTicket = new Ticket({
       title,
       description,
-      priority: priority || "Medium",
-      status: StatusType.TO_DO,
-      createdBy: req.user.id,
-      // No assignedTo yet - will be assigned by an employee later
+      // Priority defaults to 'Medium' based on the schema
+      status: StatusType.TO_DO, // Default status for new ticket
+      createdBy: req.user.id, // The customer who created the ticket
     });
 
-    // Save the issue
-    const savedIssue = await newIssue.save();
+    // Save the ticket
+    const savedTicket = await newTicket.save();
 
     res.status(201).json({
-      message: "Issue created successfully",
-      issue: savedIssue,
+      message: "Ticket created successfully",
+      ticket: savedTicket, // Return the saved ticket
     });
   } catch (error) {
-    console.error("Error creating issue:", error);
+    console.error("Error creating ticket:", error);
     res
       .status(500)
-      .json({ message: "Error creating issue", error: error.message });
+      .json({ message: "Error creating ticket", error: error.message });
   }
 });
 
@@ -194,68 +302,6 @@ router.put("/:id", authMiddleware, isAnyRole, async (req, res) => {
 });
 
 // Update task status - specific endpoint for status changes
-// Get chat history for a task
-router.get('/:id/chat', authMiddleware, isAnyRole, async (req, res) => {
-  try {
-    const task = await Task.findById(req.params.id).select('chatHistory');
-    
-    if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
-    }
-
-    if (req.user.role === UserType.CUSTOMER && task.userId.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Access denied' });
-    }
-
-    res.json(task.chatHistory);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
-
-// Chatbot endpoint for task-related questions
-router.post('/:id/chat', authMiddleware, isCustomer, async (req, res) => {
-  try {
-    const task = await Task.findById(req.params.id);
-    
-    if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
-    }
-
-    if (task.userId.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Access denied' });
-    }
-
-    // Simple FAQ-based response system
-    const faq = {
-      'status': `Current status: ${task.status}. Last updated: ${task.updatedAt.toLocaleDateString()}`,
-      'due date': `Due date: ${task.dueDate?.toLocaleDateString() || 'Not set'}`,
-      'assigned to': `Assigned to: ${task.assignedTo?.name || 'Unassigned'}`,
-      'priority': `Priority: ${task.priority}`
-    };
-
-    const message = req.body.message.toLowerCase();
-    const reply = Object.keys(faq).find(key => message.includes(key)) 
-      ? faq[Object.keys(faq).find(key => message.includes(key))]
-      : 'Please contact support for more specific questions';
-
-    // Save conversation history
-    task.chatHistory = task.chatHistory || [];
-    task.chatHistory.push({
-      question: message,
-      response: reply,
-      timestamp: new Date()
-    });
-
-    await task.save();
-
-    res.json({ reply });
-  } catch (error) {
-    console.error('Chat error:', error);
-    res.status(500).json({ message: 'Chat service unavailable', error: error.message });
-  }
-});
-
 router.put("/:id/status", authMiddleware, isAnyRole, async (req, res) => {
   try {
     const { id } = req.params;
@@ -296,6 +342,51 @@ router.put("/:id/status", authMiddleware, isAnyRole, async (req, res) => {
     res
       .status(500)
       .json({ message: "Error updating task status", error: error.message });
+  }
+});
+
+// Update ticket status - specific endpoint for customers to close/re-raise their tickets
+router.put("/tickets/:id/status", authMiddleware, isCustomer, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // Validate status - Allow only 'Closed' or 'To do' (for re-raising)
+    if (!status || ![StatusType.CLOSED, StatusType.TO_DO].includes(status)) {
+      return res.status(400).json({ message: "Invalid status update for ticket. Allowed: Closed, To do" });
+    }
+
+    // Find the ticket
+    const ticket = await Ticket.findById(id);
+
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    // Permission check: Ensure the customer owns the ticket
+    if (ticket.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({
+        message: "You don't have permission to update this ticket's status",
+      });
+    }
+
+    // Additional logic: Prevent closing if not 'Completed' or re-opening if not 'Closed'
+    // (Assuming 'Completed' status is set by employees when resolving)
+    // For now, we allow direct closing/re-opening by customer as per request
+
+    // Update the status
+    ticket.status = status;
+    const updatedTicket = await ticket.save();
+
+    res.json({
+      message: "Ticket status updated successfully",
+      ticket: updatedTicket,
+    });
+  } catch (error) {
+    console.error("Error updating ticket status:", error);
+    res
+      .status(500)
+      .json({ message: "Error updating ticket status", error: error.message });
   }
 });
 

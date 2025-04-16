@@ -28,14 +28,6 @@ const taskSchema = new mongoose.Schema(
       enum: Object.values(StatusType),
       default: StatusType.TO_DO,
     },
-    chatHistory: [{
-      question: String,
-      response: String,
-      timestamp: {
-        type: Date,
-        default: Date.now
-      }
-    }],
     dueDate: {
       type: Date,
     },

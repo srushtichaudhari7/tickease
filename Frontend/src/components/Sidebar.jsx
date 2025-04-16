@@ -47,8 +47,13 @@ const Sidebar = () => {
 
               <SidebarItem
                 icon={<FaTasks />}
-                text="My Tasks"
+                text="All Tasks"
                 onClick={() => navigate(`/employee-dashboard/my-tasks`)}
+              />
+              <SidebarItem
+                icon={<FaHeadset />}
+                text="Tickets Raised"
+                onClick={() => navigate(`/employee-dashboard/tickets`)}
               />
             </>
           ) : (
