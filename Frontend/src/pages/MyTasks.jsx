@@ -55,7 +55,7 @@ const MyTasks = () => {
             }`}
             onClick={() => navigate("/employee-dashboard/my-tasks/kanban")}
           >
-            Kanban
+            Scrum 
           </button>
           <button
             className={`px-4 py-2 ${

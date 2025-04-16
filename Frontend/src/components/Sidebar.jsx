@@ -11,6 +11,7 @@ import {
 import { GiToken } from "react-icons/gi";
 import { useAuth } from "./AuthContext";
 import UserType from "../constants/user.types";
+import Logo from "../assets/Logo.jpeg";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -19,10 +20,22 @@ const Sidebar = () => {
   return (
     <div className="w-64 h-full bg-white dark:bg-gray-800 shadow-lg p-5 flex flex-col justify-between">
       <div>
-        {/* Logo */}
+        {/* Logo
         <h2 className="text-xl font-bold text-gray-700 dark:text-white mb-6">
           TickEase
-        </h2>
+        </h2> */}
+
+<div className="flex items-center mb-6 space-x-4">
+  <img
+    src={Logo}
+    alt="TickEase Logo"
+    className="w-16 h-16 rounded-full object-cover"
+  />
+   <h2 className="text-3xl font-bold" style={{ fontFamily: "'Pacifico', cursive" }}>
+    <span style={{ color: '#93C01F' }}>Tick</span>
+    <span style={{ color: '#ADD8E6' }}>Ease</span>
+  </h2>
+</div>
 
         {/* Sidebar Links */}
         <nav className="space-y-4">

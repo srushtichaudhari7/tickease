@@ -17,7 +17,7 @@ function EmployeeDashboard() {
     totalTasks: 0,
     completedTasks: 0,
     pendingProjects: 0,
-    teammatePerformance: []
+    teammatePerformance: [],
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,11 +27,12 @@ function EmployeeDashboard() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const [tasksResponse, statsResponse, projectsResponse] = await Promise.all([
-          axiosInstance.get("/tasks"),
-          axiosInstance.get("/dashboard/employee-stats"),
-          axiosInstance.get("/projects")
-        ]);
+        const [tasksResponse, statsResponse, projectsResponse] =
+          await Promise.all([
+            axiosInstance.get("/tasks"),
+            axiosInstance.get("/dashboard/employee-stats"),
+            axiosInstance.get("/projects"),
+          ]);
 
         // Set tasks data
         setTasks(tasksResponse.data || []);
@@ -41,12 +42,14 @@ function EmployeeDashboard() {
 
         // Set employee stats
         const taskData = tasksResponse.data || [];
-        const completedTasks = taskData.filter(task => task.status === StatusType.COMPLETED).length;
+        const completedTasks = taskData.filter(
+          (task) => task.status === StatusType.COMPLETED
+        ).length;
         setStats({
           totalTasks: taskData.length,
           completedTasks: completedTasks,
           pendingProjects: projectsResponse.data?.length || 0,
-          teammatePerformance: [] // Remove teammate performance since it's not implemented in backend
+          teammatePerformance: [], // Remove teammate performance since it's not implemented in backend
         });
         setIsLoading(false);
       } catch (error) {
@@ -158,7 +161,7 @@ function EmployeeDashboard() {
             >
               Overview
             </button>
-            <button
+            {/* <button
               className={`mr-8 py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === "tasks"
                   ? "border-blue-500 text-blue-600 dark:text-blue-400"
@@ -167,8 +170,8 @@ function EmployeeDashboard() {
               onClick={() => setActiveTab("tasks")}
             >
               Tasks
-            </button>
-            <button
+            </button> */}
+            {/* <button
               className={`mr-8 py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === "projects"
                   ? "border-blue-500 text-blue-600 dark:text-blue-400"
@@ -177,7 +180,7 @@ function EmployeeDashboard() {
               onClick={() => setActiveTab("projects")}
             >
               Projects
-            </button>
+            </button> */}
           </nav>
         </div>
 
@@ -237,7 +240,7 @@ function EmployeeDashboard() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                          {task.assignedTo?.name || 'Unassigned'}
+                          {task.assignedTo?.name || "Unassigned"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {new Date(task.dueDate).toLocaleDateString()}

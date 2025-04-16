@@ -178,7 +178,7 @@ const Projects = () => {
                   id="projectName"
                   type="text"
                   placeholder="Enter project name"
-                  className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-gray-900 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
                   value={newProject.name}
                   onChange={(e) =>
                     setNewProject({ ...newProject, name: e.target.value })
@@ -194,7 +194,7 @@ const Projects = () => {
                   id="projectDescription"
                   placeholder="Enter project description"
                   rows="4"
-                  className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
                   value={newProject.description}
                   onChange={(e) =>
                     setNewProject({ ...newProject, description: e.target.value })
