@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../components/axiosInstance";
 import Sidebar from "../components/Sidebar";
 import StatusType from "../constants/status.type";
-import { DatePicker } from 'react-datepicker';
+
 
 const ConvertTicket = () => {
   const { ticketId } = useParams();
@@ -127,12 +127,12 @@ const ConvertTicket = () => {
             </select>
           </div>
           <div className="mb-4">
-            <DatePicker
-              selected={dueDate}
-              onChange={(date) => setDueDate(date)}
-              minDate={new Date()}
-              placeholderText="Select due date"
-              className="w-full p-2 border rounded"
+            <input
+              type="date"
+              value={dueDate || ''}
+              onChange={(e) => setDueDate(e.target.value)}
+              min={new Date().toISOString().split('T')[0]}
+              className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
             />
           </div>
           <div className="flex space-x-4">
