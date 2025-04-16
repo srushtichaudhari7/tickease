@@ -43,7 +43,7 @@ const MyTasks = () => {
         <div className="flex space-x-4 mt-4">
           <button
             className={`px-4 py-2 ${
-              view === "table" ? "bg-gray-300" : "bg-gray-100"
+              view === "table" ? "bg-gray-600" : "bg-gray-100"
             }`}
             onClick={() => setView("table")}
           >
@@ -51,7 +51,7 @@ const MyTasks = () => {
           </button>
           <button
             className={`px-4 py-2 ${
-              view === "kanban" ? "bg-gray-300" : "bg-gray-100"
+              view === "kanban" ? "bg-gray-600" : "bg-gray-600"
             }`}
             onClick={() => navigate("/employee-dashboard/my-tasks/kanban")}
           >
@@ -59,7 +59,7 @@ const MyTasks = () => {
           </button>
           <button
             className={`px-4 py-2 ${
-              view === "calendar" ? "bg-gray-300" : "bg-gray-100"
+              view === "calendar" ? "bg-gray-600" : "bg-gray-600"
             }`}
             onClick={() => navigate("/employee-dashboard/my-tasks/calendar")}
           >

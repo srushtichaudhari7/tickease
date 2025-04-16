@@ -16,4 +16,4 @@
   BUSINESS_DEVELOPMENT: "Business Development",
 };
 
-module.exports = DepartmentType;
+export default DepartmentType;

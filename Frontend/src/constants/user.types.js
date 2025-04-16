@@ -3,4 +3,4 @@ const UserType = {
   CUSTOMER: "customer",
 };
 
-module.exports = UserType;
+export default UserType;

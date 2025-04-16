@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "./axiosInstance";
-import { StatusType } from "../../../Shared/status.type.js";
+import StatusType from "../constants/status.type";
+import { useAuth } from "./AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const TaskModal = ({ isOpen, onClose, onTaskAdded }) => {
+  const { currentUser } = useAuth();
   const [taskData, setTaskData] = useState({
     title: "",
     projectId: "",
@@ -55,7 +58,7 @@ const TaskModal = ({ isOpen, onClose, onTaskAdded }) => {
 
   // Submit task to backend
   const handleSubmit = async () => {
-    const { title, projectId, assigneeId, dueDate } = taskData;
+    const { title, projectId, assigneeId, dueDate, status } = taskData;
 
     if (!title || !projectId || !assigneeId || !dueDate) {
       setError("All fields are required!");
@@ -64,8 +67,45 @@ const TaskModal = ({ isOpen, onClose, onTaskAdded }) => {
 
     setIsLoading(true);
     try {
-      const response = await axiosInstance.post("/tasks", taskData);
-      onTaskAdded(response.data);
+      // Get current user ID from the auth context or token
+      let userId = currentUser?.id;
+      
+      // If not available in context, try to get from token
+      if (!userId) {
+        const token = localStorage.getItem("token");
+        if (token) {
+          try {
+            const decoded = jwtDecode(token);
+            userId = decoded.id;
+          } catch (e) {
+            console.error("Error decoding token:", e);
+          }
+        }
+      }
+      
+      if (!userId) {
+        setError("User authentication issue. Please log in again.");
+        setIsLoading(false);
+        return;
+      }
+      
+      // Map frontend field names to what the backend expects
+      const taskPayload = {
+        title,
+        project: projectId,
+        assignedTo: assigneeId, // This is correct - backend expects assignedTo
+        userId: userId, // Adding userId as required by the backend model
+        dueDate,
+        status,
+        description: "", // Adding empty description as it's in the model
+        priority: "Medium" // Default priority
+      };
+      
+      const response = await axiosInstance.post("/tasks", taskPayload);
+      
+      // Handle different response formats
+      const newTask = response.data.task || response.data;
+      onTaskAdded(newTask);
       onClose();
       setError("");
     } catch (error) {

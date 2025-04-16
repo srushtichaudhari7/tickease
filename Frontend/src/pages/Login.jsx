@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
-import { UserType } from "../../../Shared/user.types.js";
+import UserType from "../constants/user.types";
 
 const Login = () => {
   const [email, setEmail] = useState("");

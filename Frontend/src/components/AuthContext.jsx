@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { UserType } from "../../../Shared/user.types.js";
+import UserType from "../constants/user.types";
 
 // Create auth context
 const AuthContext = createContext();

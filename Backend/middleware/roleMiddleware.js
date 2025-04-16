@@ -1,4 +1,4 @@
-import { UserType } from "../../Shared/user.types.js";
+import  UserType  from "../../Shared/user.types.js";
 
 // Middleware to check if the user has the required role
 const roleMiddleware = (roles = []) => {

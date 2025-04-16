@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "./axiosInstance";
-import { StatusType } from "../../../Shared/status.type.js";
+import StatusType from "../constants/status.type";
 
 const TaskKanban = () => {
   const [tasks, setTasks] = useState([]);

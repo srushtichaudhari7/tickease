@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import { UserType } from "../../../Shared/user.types.js";
+import UserType from "../constants/user.types";
 
 const ProtectedRoute = ({ children, role }) => {
   const { currentUser, loading } = useAuth();

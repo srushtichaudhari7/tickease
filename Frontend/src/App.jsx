@@ -9,10 +9,11 @@ import React from "react";
 import TaskKanban from "./components/TaskKanban";
 import TaskCalendar from "./components/TaskCalendar";
 import Projects from "./pages/Projects";
+import ProjectDetails from "./pages/ProjectDetails";
 import Members from "./pages/Members";
 import CreateIssue from "./components/CreateIssue.jsx";
-import { UserType } from "../../Shared/user.types.js";
-
+import UserType from "./constants/user.types";
+import TaskDetails from "./components/TaskDetails";
 function App() {
   return (
     <Routes>
@@ -43,10 +44,28 @@ function App() {
       />
 
       <Route
+        path="/projects/:projectId"
+        element={
+          <ProtectedRoute role={UserType.EMPLOYEE}>
+            <ProjectDetails />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/employee-dashboard/my-tasks"
         element={
           <ProtectedRoute role={UserType.EMPLOYEE}>
             <MyTasks />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/employee-dashboard/my-tasks/:taskId"
+        element={
+          <ProtectedRoute role={UserType.EMPLOYEE}>
+            <TaskDetails />
           </ProtectedRoute>
         }
       />

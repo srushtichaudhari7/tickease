@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
 import Sidebar from "../components/Sidebar";
 import axiosInstance from "../components/axiosInstance";
-import { StatusType } from "../../../Shared/status.type";
+import StatusType from "../constants/status.type";
 
 function CustomerDashboard() {
   const navigate = useNavigate();

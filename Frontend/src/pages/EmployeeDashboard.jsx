@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
 import axiosInstance from "../components/axiosInstance";
 import Sidebar from "../components/Sidebar";
-import { StatusType } from "../../../Shared/status.type.js";
+import StatusType from "../constants/status.type";
 
 function EmployeeDashboard() {
   const navigate = useNavigate();
@@ -17,6 +17,7 @@ function EmployeeDashboard() {
     totalTasks: 0,
     completedTasks: 0,
     pendingProjects: 0,
+    teammatePerformance: []
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,21 +27,27 @@ function EmployeeDashboard() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await axiosInstance.get("/dashboard");
+        const [tasksResponse, statsResponse, projectsResponse] = await Promise.all([
+          axiosInstance.get("/tasks"),
+          axiosInstance.get("/dashboard/employee-stats"),
+          axiosInstance.get("/projects")
+        ]);
 
         // Set tasks data
-        setTasks(response.data.tasks || []);
+        setTasks(tasksResponse.data || []);
+
         // Set projects data
-        setProjects(response.data.projects || []);
+        setProjects(projectsResponse.data || []);
 
-        // Get employee stats
-        const statsResponse = await axiosInstance.get(
-          "/dashboard/employee-stats"
-        );
-        if (statsResponse.data && statsResponse.data.employeeStats) {
-          setStats(statsResponse.data.employeeStats);
-        }
-
+        // Set employee stats
+        const taskData = tasksResponse.data || [];
+        const completedTasks = taskData.filter(task => task.status === StatusType.COMPLETED).length;
+        setStats({
+          totalTasks: taskData.length,
+          completedTasks: completedTasks,
+          pendingProjects: projectsResponse.data?.length || 0,
+          teammatePerformance: [] // Remove teammate performance since it's not implemented in backend
+        });
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -230,7 +237,7 @@ function EmployeeDashboard() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                          {task.assignedTo}
+                          {task.assignedTo?.name || 'Unassigned'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {new Date(task.dueDate).toLocaleDateString()}
@@ -297,7 +304,7 @@ function EmployeeDashboard() {
               <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 flex justify-center">
                 <button
                   className="text-sm text-blue-500 dark:text-blue-400 hover:underline"
-                  onClick={() => navigate("/projects")}
+                  onClick={() => navigate("/employee-dashboard/projects")}
                 >
                   View All Projects
                 </button>

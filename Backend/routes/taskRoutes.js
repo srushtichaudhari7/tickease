@@ -6,10 +6,33 @@ import {
   isAnyRole,
   isCustomer,
 } from "../middleware/roleMiddleware.js";
-import { UserType } from "../../Shared/user.types.js";
-import { StatusType } from "../../Shared/status.type.js";
+import  UserType  from "../../Shared/user.types.js";
+import  StatusType  from "../../Shared/status.type.js";
 
 const router = express.Router();
+
+// Get individual task by ID
+router.get('/:id', authMiddleware, isAnyRole, async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id)
+      .populate('assignedTo', 'name email')
+      .select('-__v');
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    // Role-based access check
+    if (req.user.role === UserType.CUSTOMER && task.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    res.json(task);
+  } catch (error) {
+    console.error('Error fetching task:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
 
 // Get all tasks - different results based on role
 router.get("/", authMiddleware, isAnyRole, async (req, res) => {
@@ -167,6 +190,112 @@ router.put("/:id", authMiddleware, isAnyRole, async (req, res) => {
     res
       .status(500)
       .json({ message: "Error updating task", error: error.message });
+  }
+});
+
+// Update task status - specific endpoint for status changes
+// Get chat history for a task
+router.get('/:id/chat', authMiddleware, isAnyRole, async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id).select('chatHistory');
+    
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    if (req.user.role === UserType.CUSTOMER && task.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    res.json(task.chatHistory);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Chatbot endpoint for task-related questions
+router.post('/:id/chat', authMiddleware, isCustomer, async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+    
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    if (task.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    // Simple FAQ-based response system
+    const faq = {
+      'status': `Current status: ${task.status}. Last updated: ${task.updatedAt.toLocaleDateString()}`,
+      'due date': `Due date: ${task.dueDate?.toLocaleDateString() || 'Not set'}`,
+      'assigned to': `Assigned to: ${task.assignedTo?.name || 'Unassigned'}`,
+      'priority': `Priority: ${task.priority}`
+    };
+
+    const message = req.body.message.toLowerCase();
+    const reply = Object.keys(faq).find(key => message.includes(key)) 
+      ? faq[Object.keys(faq).find(key => message.includes(key))]
+      : 'Please contact support for more specific questions';
+
+    // Save conversation history
+    task.chatHistory = task.chatHistory || [];
+    task.chatHistory.push({
+      question: message,
+      response: reply,
+      timestamp: new Date()
+    });
+
+    await task.save();
+
+    res.json({ reply });
+  } catch (error) {
+    console.error('Chat error:', error);
+    res.status(500).json({ message: 'Chat service unavailable', error: error.message });
+  }
+});
+
+router.put("/:id/status", authMiddleware, isAnyRole, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // Validate status
+    if (!status || !Object.values(StatusType).includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    // Find the task
+    const task = await Task.findById(id);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    // Role-based permission checks
+    if (req.user.role === UserType.CUSTOMER) {
+      // Customers can only update tasks they created
+      if (task.userId.toString() !== req.user.id) {
+        return res.status(403).json({
+          message: "You don't have permission to update this task",
+        });
+      }
+    }
+
+    // Update the status
+    task.status = status;
+    const updatedTask = await task.save();
+
+    res.json({
+      message: "Task status updated successfully",
+      task: updatedTask,
+    });
+  } catch (error) {
+    console.error("Error updating task status:", error);
+    res
+      .status(500)
+      .json({ message: "Error updating task status", error: error.message });
   }
 });
 

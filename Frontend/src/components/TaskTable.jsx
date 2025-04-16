@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "./axiosInstance";
-import { StatusType } from "../../../Shared/status.type.js";
+import StatusType from "../constants/status.type";
 
 const TaskTable = () => {
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -218,6 +220,7 @@ const TaskTable = () => {
               <tr
                 key={task._id}
                 className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                onClick={() => navigate(`/employee-dashboard/my-tasks/${task._id}`)}
               >
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                   {task.title}

@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { GiToken } from "react-icons/gi";
 import { useAuth } from "./AuthContext";
-import { UserType } from "../../../Shared/user.types.js";
+import UserType from "../constants/user.types";
 
 const Sidebar = () => {
   const navigate = useNavigate();

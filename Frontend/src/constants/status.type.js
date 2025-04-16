@@ -4,4 +4,4 @@
   COMPLETED: "Completed",
 };
 
-module.exports = StatusType;
+export default StatusType;
