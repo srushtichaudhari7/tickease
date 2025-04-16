@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../components/axiosInstance";
 import Sidebar from "../components/Sidebar";
 import StatusType from "../constants/status.type";
-import { DatePicker } from 'react-dates';
+import { DatePicker } from 'react-datepicker';
 
 const ConvertTicket = () => {
   const { ticketId } = useParams();
