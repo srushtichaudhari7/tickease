@@ -17,7 +17,6 @@ import TaskDetails from "./components/TaskDetails";
 import TicketsRaised from "./pages/TicketsRaised";
 import ConvertTicket from "./pages/ConvertTicket";
 
-
 function App() {
   return (
     <Routes>
@@ -131,7 +130,17 @@ function App() {
       />
 
       {/* Catch all route - redirect to login */}
-      <Route path="/convert-ticket/:ticketId" element={<ConvertTicket />} />
+      {/* <Route path="/convert-ticket/:ticketId" element={<ConvertTicket />} /> */}
+
+      <Route
+        path="/convert-ticket/:ticketId"
+        element={
+          <ProtectedRoute allowedRoles={["employee"]}>
+            <ConvertTicket />
+          </ProtectedRoute>
+        }
+      />
+
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );

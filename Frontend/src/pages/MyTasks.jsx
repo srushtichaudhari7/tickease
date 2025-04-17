@@ -17,7 +17,7 @@ const MyTasks = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axiosInstance.get("/api/tasks", {
+        const response = await axiosInstance.get("/tasks", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setTasks(response.data);

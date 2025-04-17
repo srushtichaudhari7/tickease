@@ -26,18 +26,29 @@ function CustomerDashboard() {
   const updateTicketStatus = async (ticketId, newStatus) => {
     try {
       setIsLoading(true); // Indicate loading during update
-      await axiosInstance.put(`/tasks/tickets/${ticketId}/status`, { status: newStatus });
+      await axiosInstance.put(`/tasks/tickets/${ticketId}/status`, {
+        status: newStatus,
+      });
       // Refresh tickets list after update
-      const updatedTickets = tickets.map(ticket =>
+      const updatedTickets = tickets.map((ticket) =>
         ticket.id === ticketId ? { ...ticket, status: newStatus } : ticket
       );
       setTickets(updatedTickets);
 
       // Recalculate stats after status change
       setStats({
-        openIssues: updatedTickets.filter(t => t.status === StatusType.TO_DO).length,
-        inProgressIssues: updatedTickets.filter(t => t.status === StatusType.IN_PROGRESS || t.status === StatusType.CONVERTED_TO_TASK).length,
-        resolvedIssues: updatedTickets.filter(t => t.status === StatusType.COMPLETED || t.status === StatusType.CLOSED).length,
+        openIssues: updatedTickets.filter(
+          (t) => t.status === StatusType.TO_DO || StatusType.CONVERTED_TO_TASK
+        ).length,
+        inProgressIssues: updatedTickets.filter(
+          (t) =>
+            t.status === StatusType.IN_PROGRESS ||
+            t.status === StatusType.CONVERTED_TO_TASK
+        ).length,
+        resolvedIssues: updatedTickets.filter(
+          (t) =>
+            t.status === StatusType.COMPLETED || t.status === StatusType.CLOSED
+        ).length,
       });
       toast.success(`Ticket status updated to ${newStatus}`);
     } catch (err) {
@@ -82,15 +93,20 @@ function CustomerDashboard() {
         setStats({
           // Open includes To Do
           openIssues: ticketData.filter(
-            (ticket) => ticket.status === StatusType.TO_DO
+            (ticket) =>
+              ticket.status === StatusType.TO_DO || StatusType.CONVERTED_TO_TASK
           ).length,
           // In Progress includes Converted to Task
           inProgressIssues: ticketData.filter(
-            (ticket) => ticket.status === StatusType.IN_PROGRESS || ticket.status === StatusType.CONVERTED_TO_TASK
+            (ticket) =>
+              ticket.status === StatusType.IN_PROGRESS ||
+              ticket.status === StatusType.CONVERTED_TO_TASK
           ).length,
           // Resolved includes Completed and Closed
           resolvedIssues: ticketData.filter(
-            (ticket) => ticket.status === StatusType.COMPLETED || ticket.status === StatusType.CLOSED
+            (ticket) =>
+              ticket.status === StatusType.COMPLETED ||
+              ticket.status === StatusType.CLOSED
           ).length,
         });
 
@@ -183,9 +199,9 @@ function CustomerDashboard() {
             <h1 className="text-2xl font-bold dark:text-white">
               Welcome, {currentUser?.name || "Customer"}
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
+            {/* <p className="text-gray-500 dark:text-gray-400 text-sm">
               Manage your support tickets and requests
-            </p>
+            </p> */}
           </div>
         </div>
 
@@ -196,7 +212,7 @@ function CustomerDashboard() {
               Open Issues
             </div>
             <div className="text-3xl font-bold dark:text-white">
-              {stats.openIssues}
+              {/* {stats.openIssues} */}3
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
@@ -204,7 +220,7 @@ function CustomerDashboard() {
               In Progress
             </div>
             <div className="text-3xl font-bold dark:text-white">
-              {stats.inProgressIssues}
+              {/* {stats.inProgressIssues} */} 2
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
@@ -212,24 +228,24 @@ function CustomerDashboard() {
               Resolved
             </div>
             <div className="text-3xl font-bold dark:text-white">
-              {stats.resolvedIssues}
+              {/* {stats.resolvedIssues} */}1
             </div>
           </div>
         </div>
 
-          <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
-            <nav className="flex -mb-px">
-              {/* Keep only the My Tickets button */}
-              <button
-                className={`mr-8 py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600 dark:text-blue-400`}
-              >
-                My Tickets
-              </button>
-            </nav>
-          </div>
+        <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+          <nav className="flex -mb-px">
+            {/* Keep only the My Tickets button */}
+            <button
+              className={`mr-8 py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600 dark:text-blue-400`}
+            >
+              My Tickets
+            </button>
+          </nav>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Tickets Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent Tickets Section */}
           <div className="lg:col-span-2">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
               <div className="p-6">
@@ -246,7 +262,7 @@ function CustomerDashboard() {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                       >
-                        ID
+                        Ticket ID
                       </th>
                       <th
                         scope="col"
@@ -261,12 +277,12 @@ function CustomerDashboard() {
                         Status
                       </th>
                       {/* Priority column removed */}
-                      <th
+                      {/* <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                       >
                         Actions
-                      </th>
+                      </th> */}
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
@@ -276,6 +292,36 @@ function CustomerDashboard() {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      680016gf28f5a83c08a5564
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        Period 
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="flex items-center">
+                          <span className="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"></span>
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                            Completed
+                          </span>
+                        </span>
+                      </td>
+                      {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        <button
+                          onClick={() =>
+                            console.log("Closing sample ticket...")
+                          }
+                          className="text-red-600 hover:text-red-800 text-xs font-medium"
+                        >
+                          Close Ticket
+                        </button>
+                      </td> */}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        Today
+                      </td>
+                    </tr>
+
                     {tickets.length > 0 ? (
                       tickets.map((ticket) => (
                         <tr key={ticket.id}>
@@ -291,14 +337,14 @@ function CustomerDashboard() {
                                 className={`h-2.5 w-2.5 rounded-full ${
                                   ticket.status === StatusType.TO_DO
                                     ? "bg-red-400" // To Do
-                                    : ticket.status === StatusType.IN_PROGRESS
+                                    : ticket.status ===
+                                        StatusType.IN_PROGRESS ||
+                                      ticket.status ===
+                                        StatusType.CONVERTED_TO_TASK
                                     ? "bg-orange-400" // In Progress
-                                    : ticket.status === StatusType.CONVERTED_TO_TASK
-                                    ? "bg-blue-400" // Converted to Task
-                                    : ticket.status === StatusType.COMPLETED
+                                    : ticket.status === StatusType.COMPLETED ||
+                                      ticket.status === StatusType.CLOSED
                                     ? "bg-green-400" // Completed
-                                    : ticket.status === StatusType.CLOSED
-                                    ? "bg-gray-400" // Closed
                                     : "bg-yellow-400" // Default/Other
                                 } mr-2`}
                               ></span>
@@ -307,10 +353,10 @@ function CustomerDashboard() {
                               </span>
                             </span>
                           </td>
-                          {/* Priority cell removed */}
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+
+                          {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             {/* Conditional Actions */}
-                            {ticket.status === StatusType.COMPLETED && (
+                            {/* {ticket.status === StatusType.COMPLETED && (
                               <button
                                 onClick={() => handleCloseTicket(ticket.id)}
                                 className="text-red-600 hover:text-red-800 text-xs font-medium disabled:opacity-50"
@@ -329,7 +375,7 @@ function CustomerDashboard() {
                               </button>
                             )}
                             {/* Add other actions if needed, e.g., View Details */}
-                          </td>
+                       
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             {ticket.created}
                           </td>
@@ -396,7 +442,7 @@ function CustomerDashboard() {
               </div>
             </div>
 
-            {/* Announcements Section */}
+            {/* Announcements Section
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
               <h2 className="text-lg font-medium text-gray-800 dark:text-white mb-4">
                 Announcements
@@ -419,8 +465,8 @@ function CustomerDashboard() {
                     </p>
                   </div>
                 ))}
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
           </div>
         </div>
       </div>

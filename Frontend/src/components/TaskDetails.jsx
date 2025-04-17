@@ -20,7 +20,7 @@ const TaskDetails = () => {
   const confirmDelete = async () => {
     try {
       await axiosInstance.delete(`/tasks/${taskId}`);
-      navigate("/tasks");
+      navigate("/employee-dashboard/my-tasks");
     } catch (error) {
       console.error("Error deleting task:", error);
       setError("Failed to delete task. Please try again.");
@@ -37,6 +37,7 @@ const TaskDetails = () => {
     const fetchTaskDetails = async () => {
       setIsLoading(true);
       const response = await axiosInstance.get(`/tasks/${taskId}`);
+      console.log("Fetched task:", response.data);  
       setTask(response.data);
       setEditedTask(response.data);
       setIsLoading(false);
@@ -274,7 +275,7 @@ const TaskDetails = () => {
                       Project
                     </h4>
                     <p className="text-gray-900 dark:text-gray-100">
-                      {task.project?.name || "Not assigned to a project"}
+                      {task.projectId || "Not assigned to a project"}
                     </p>
                   </div>
                   <div>
@@ -282,7 +283,7 @@ const TaskDetails = () => {
                       Assignee
                     </h4>
                     <p className="text-gray-900 dark:text-gray-100">
-                      {task.assignee?.name || "Unassigned"}
+                      {task.assigneeId || "Unassigned"}
                     </p>
                   </div>
                 </div>

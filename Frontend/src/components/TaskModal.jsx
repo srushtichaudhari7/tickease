@@ -161,7 +161,7 @@ const TaskModal = ({ isOpen, onClose, onTaskAdded }) => {
         <input
           type="text"
           placeholder="Task Title"
-          className="w-full p-2 border rounded mb-3 text-gray-900 placeholder-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          className="w-full p-2 border rounded mb-3 text-gray-900 placeholder-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           value={taskData.title}
           onChange={(e) => setTaskData({ ...taskData, title: e.target.value })}
         />

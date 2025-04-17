@@ -10,7 +10,7 @@ const TicketsRaised = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [employees, setEmployees] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState({});
   const [convertingTicketId, setConvertingTicketId] = useState(null);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const TicketsRaised = () => {
 
         // Fetch employees for assignment dropdown
         const membersResponse = await axiosInstance.get("/members");
-        setEmployees(membersResponse);
+        setEmployees(membersResponse.data);
 
         setIsLoading(false);
       } catch (error) {
@@ -128,9 +128,9 @@ const TicketsRaised = () => {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Title
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Customer
-                  </th>
+                  </th> */}
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Status
                   </th>
@@ -158,14 +158,14 @@ const TicketsRaised = () => {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 dark:text-white">
-                        {ticket.userId?.name || "Unknown"}
-                      </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {ticket.userId?.email || ""}
-                      </div>
-                    </td>
+                    {/* <td className="px-6 py-4 whitespace-nowrap">
+                      {/* <div className="text-sm text-gray-900 dark:text-white">
+                        {ticket.userId?.name}
+                      </div> */}
+                      {/* <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {ticket?.userId?.email || ""}
+                      </div> */}
+                    
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadge(ticket.status)}`}>
                         {ticket.status}
@@ -208,7 +208,7 @@ const TicketsRaised = () => {
                       ) : (
                         <button
                           onClick={() => navigate(`/convert-ticket/${ticket._id}`)}
-                          className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                          className="text-indigo-600 text-centre hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                         >
                           Convert to Task
                         </button>

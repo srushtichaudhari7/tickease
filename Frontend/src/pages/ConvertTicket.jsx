@@ -96,7 +96,7 @@ const ConvertTicket = () => {
               <span className="font-semibold dark:text-gray-200">Description:</span> {ticket?.description || "-"}
             </div>
             <div className="mb-2">
-              <span className="font-semibold dark:text-gray-200">Customer:</span> {ticket?.userId?.name || "Unknown"}
+              <span className="font-semibold dark:text-gray-200">Customer:</span> {ticket?.userId?.email || "Unknown"}
             </div>
             <div className="mb-2">
               <span className="font-semibold dark:text-gray-200">Priority:</span> {ticket?.priority}

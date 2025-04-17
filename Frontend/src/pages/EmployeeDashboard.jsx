@@ -216,7 +216,7 @@ function EmployeeDashboard() {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                       >
-                        Assigned To
+                        Priority
                       </th>
                       <th
                         scope="col"
@@ -242,7 +242,7 @@ function EmployeeDashboard() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                          {task.assignedTo?.name || "Unassigned"}
+                          {task.priority}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {new Date(task.dueDate).toLocaleDateString()}
