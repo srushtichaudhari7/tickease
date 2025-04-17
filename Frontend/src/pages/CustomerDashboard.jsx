@@ -111,18 +111,18 @@ function CustomerDashboard() {
         });
 
         // Set sample announcements (would come from API in production)
-        setAnnouncements([
-          {
-            id: 1,
-            title: "Scheduled maintenance on April 20th",
-            date: "Apr 13, 2025",
-          },
-          {
-            id: 2,
-            title: "New features released!",
-            date: "Apr 10, 2025",
-          },
-        ]);
+        // setAnnouncements([
+        //   {
+        //     id: 1,
+        //     title: "Scheduled maintenance on April 20th",
+        //     date: "Apr 13, 2025",
+        //   },
+        //   {
+        //     id: 2,
+        //     title: "New features released!",
+        //     date: "Apr 10, 2025",
+        //   },
+        // ]);
 
         setIsLoading(false);
       } catch (error) {
@@ -212,7 +212,7 @@ function CustomerDashboard() {
               Open Issues
             </div>
             <div className="text-3xl font-bold dark:text-white">
-              {/* {stats.openIssues} */}3
+              {/* {stats.openIssues} */}9
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
@@ -220,7 +220,7 @@ function CustomerDashboard() {
               In Progress
             </div>
             <div className="text-3xl font-bold dark:text-white">
-              {/* {stats.inProgressIssues} */} 2
+              {/* {stats.inProgressIssues} */} 4
             </div>
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
@@ -228,7 +228,7 @@ function CustomerDashboard() {
               Resolved
             </div>
             <div className="text-3xl font-bold dark:text-white">
-              {/* {stats.resolvedIssues} */}1
+              {/* {stats.resolvedIssues} */}2
             </div>
           </div>
         </div>

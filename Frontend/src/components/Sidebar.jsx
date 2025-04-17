@@ -114,7 +114,7 @@ const Sidebar = () => {
           <p className="text-sm font-bold text-gray-700 dark:text-white">
             {currentUser?.name || "User"}
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-100">
             {currentUser?.role === UserType.EMPLOYEE ? "Employee" : "Customer"}
           </p>
         </div>

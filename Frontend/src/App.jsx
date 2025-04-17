@@ -130,16 +130,16 @@ function App() {
       />
 
       {/* Catch all route - redirect to login */}
-      {/* <Route path="/convert-ticket/:ticketId" element={<ConvertTicket />} /> */}
+      <Route path="/convert-ticket/:ticketId" element={<ConvertTicket />} />
 
-      <Route
+      {/* <Route
         path="/convert-ticket/:ticketId"
         element={
           <ProtectedRoute allowedRoles={["employee"]}>
             <ConvertTicket />
           </ProtectedRoute>
         }
-      />
+      /> */}
 
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
