@@ -1,8 +1,8 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import UserType from "../constants/user.types";
+import axiosInstance from "../utils/axiosInstance"; // 👈 import your axios instance
 
 // Create auth context
 const AuthContext = createContext();
@@ -35,10 +35,7 @@ export const AuthProvider = ({ children }) => {
 
           // Verify token with backend (optional extra security)
           try {
-            const response = await axios.get(
-              "http://localhost:4000/api/auth/me",
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const response = await axiosInstance.get("/auth/me");
 
             // Set user with backend data including name
             setCurrentUser({
@@ -69,25 +66,18 @@ export const AuthProvider = ({ children }) => {
   // Login function with role validation
   const login = async (email, password, selectedRole) => {
     try {
-      const { data } = await axios.post(
-        "http://localhost:4000/api/auth/login",
-        {
-          email,
-          password,
-        }
-      );
+      const { data } = await axiosInstance.post("/auth/login", {
+        email,
+        password,
+      });
 
-      // Verify that the user's role matches the selected portal
       const decoded = jwtDecode(data.token);
 
       if (decoded.role !== selectedRole) {
-        console.error(
-          "Role mismatch: User tried to log in to the wrong portal"
-        );
+        console.error("Role mismatch: User tried to log in to the wrong portal");
         return false;
       }
 
-      // Set token and user info
       localStorage.setItem("token", data.token);
       setCurrentUser({
         id: decoded.id,
@@ -95,7 +85,6 @@ export const AuthProvider = ({ children }) => {
         name: decoded.name || "",
       });
 
-      // Navigate based on role
       if (decoded.role === UserType.EMPLOYEE) {
         navigate("/employee-dashboard");
       } else {
@@ -112,15 +101,12 @@ export const AuthProvider = ({ children }) => {
   // Signup function
   const signup = async (name, email, password, role) => {
     try {
-      const { data } = await axios.post(
-        "http://localhost:4000/api/auth/signup",
-        {
-          name,
-          email,
-          password,
-          role,
-        }
-      );
+      const { data } = await axiosInstance.post("/auth/signup", {
+        name,
+        email,
+        password,
+        role,
+      });
 
       return { success: true, message: "Signup successful" };
     } catch (error) {
@@ -139,7 +125,6 @@ export const AuthProvider = ({ children }) => {
     navigate("/login");
   };
 
-  // Expose auth context values
   const value = {
     currentUser,
     login,

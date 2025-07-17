@@ -11,14 +11,7 @@ const Members = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await axiosInstance.get(
-          "http://localhost:4000/api/members",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        const response = await axiosInstance.get("/members");
         setMembers(response.data);
       } catch (error) {
         console.error("Error fetching members:", error);
@@ -35,14 +28,7 @@ const Members = () => {
     }
 
     try {
-      const response = await axiosInstance.post(
-        "http://localhost:4000/api/members",
-        newMember,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-
+      const response = await axiosInstance.post("/members", newMember);
       setMembers([...members, response.data]);
       setIsModalOpen(false);
       setNewMember({ name: "", email: "" });
@@ -56,7 +42,7 @@ const Members = () => {
       {/* Sidebar */}
       <Sidebar />
 
-      {/* Main content on the right */}
+      {/* Main content */}
       <div className="flex-1 p-6 overflow-y-auto">
         <h1 className="text-2xl font-bold mb-4 text-white-800">Team Members</h1>
 
