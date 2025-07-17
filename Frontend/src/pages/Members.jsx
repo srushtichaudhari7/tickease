@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import axiosInstance from "../components/axiosInstance";
 import Sidebar from "../components/Sidebar";
+import axiosInstance from "../components/axiosInstance";
 
 const Members = () => {
   const [members, setMembers] = useState([]);
